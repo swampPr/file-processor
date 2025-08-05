@@ -1,4 +1,5 @@
 import { mkdir, rmdir } from 'node:fs/promises';
+import { ungzip, gzip } from 'node-gzip';
 
 export type SessionID = string;
 
@@ -16,7 +17,7 @@ export async function createSession(): Promise<SessionID> {
 
 export async function cleanSession(id: SessionID) {
     try {
-        await rmdir(`./src/backend/sessions/${id}`);
+        await rmdir(`./src/backend/sessions/${id}`, { recursive: true });
 
         return true;
     } catch (err) {
@@ -24,7 +25,11 @@ export async function cleanSession(id: SessionID) {
     }
 }
 
-export async function PDFGzip(file: Uint8Array) {
-    const compressed = Bun.gunzipSync(file);
-    return compressed;
+export async function PDFGzip(file: Buffer) {
+    try {
+        const zipped: Buffer = await gzip(file);
+        return zipped;
+    } catch (err) {
+        throw err;
+    }
 }

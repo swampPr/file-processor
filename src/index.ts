@@ -13,4 +13,8 @@ app.get('/', (c) => {
 //INFO: API ROUTES
 app.route('/api', MainRouter);
 
-export default app;
+export default {
+    port: 3000,
+    fetch: app.fetch,
+    maxRequestBodySize: 1024 * 1024 * 500, //INFO: Max size upload: 500mb
+};

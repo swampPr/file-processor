@@ -1,5 +1,4 @@
 # deps
 node_modules/
+bun.lock
 
-# misc
-TODO.js
