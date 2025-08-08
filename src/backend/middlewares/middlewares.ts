@@ -1,7 +1,8 @@
 import type { Context, Next } from 'hono';
+import { Logger } from '../utils/utils.ts';
 import { gzip, ungzip } from 'node-gzip';
 
-//INFO: Some more middlewares still need to be added for file types MP3, and MP4
+const log = new Logger();
 
 export default class Middlewares {
     InfoHelper = (c: Context) => {
@@ -12,6 +13,7 @@ export default class Middlewares {
             size: c.get('size'),
         };
     };
+
     ParseFile = async (c: Context, next: Next) => {
         try {
             const body = await c.req.parseBody();
@@ -24,7 +26,7 @@ export default class Middlewares {
 
             await next();
         } catch (err) {
-            console.error(err);
+            log.Error(err);
             c.status(500);
             return c.json({
                 error: 'Something went wrong...',
@@ -38,12 +40,15 @@ export default class Middlewares {
 
             const fileBuffer: ArrayBuffer = await file.arrayBuffer();
             const decompressedPDF: Buffer = await ungzip(fileBuffer);
+            console.time('Unzip');
+            log.Log('PDF has been unzipped');
+            console.timeEnd('Unzip');
 
             c.set('decompressedPDF', decompressedPDF);
 
             await next();
         } catch (err) {
-            console.error(err);
+            log.Error(err);
             c.status(500);
             return c.json({
                 error: 'Something went wrong...',

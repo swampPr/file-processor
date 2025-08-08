@@ -1,5 +1,6 @@
 import { mkdir, rmdir } from 'node:fs/promises';
 import { ungzip, gzip } from 'node-gzip';
+import chalk from 'chalk';
 
 export type SessionID = string;
 
@@ -31,5 +32,19 @@ export async function PDFGzip(file: Buffer) {
         return zipped;
     } catch (err) {
         throw err;
+    }
+}
+
+export class Logger {
+    Error(err: unknown) {
+        console.error(chalk.redBright(err));
+    }
+
+    Log(msg: string) {
+        console.log(chalk.greenBright(msg));
+    }
+
+    Warn(msg: string) {
+        console.warn(chalk.rgb(255, 165, 0)(msg));
     }
 }

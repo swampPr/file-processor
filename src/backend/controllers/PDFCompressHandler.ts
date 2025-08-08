@@ -1,5 +1,8 @@
 import type { Context } from 'hono';
+import { Logger } from '../utils/utils.ts';
 import { PDFCompressService } from '../services/PDFCompressService.ts';
+
+const log = new Logger();
 
 export async function PDFCompressHandler(c: Context) {
     try {
@@ -18,7 +21,7 @@ export async function PDFCompressHandler(c: Context) {
         c.header('X-File-Type', 'PDF');
         return c.body(defaultCompress);
     } catch (err) {
-        console.error(err);
+        log.Error(err);
         c.status(500);
         return c.json({
             error: 'Something went wrong',
