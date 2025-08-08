@@ -1,20 +1,14 @@
 import type { SessionID } from '../utils/utils.ts';
-import { Logger } from '../utils/utils.ts';
+import { cleanSession, createSession, Logger } from '../utils/utils.ts';
+import type { PDFInfo } from './PDFToJPGService.ts';
 import AdmZip from 'adm-zip';
-import { cleanSession, createSession } from '../utils/utils.ts';
-import { mkdir } from 'node:fs/promises';
 import { fromBuffer } from 'pdf2pic';
+import { mkdir } from 'node:fs/promises';
 
 const zip = new AdmZip();
 const log = new Logger();
 
-interface PDFInfo {
-    readonly IMGFolder: string;
-    readonly dpi: number;
-    readonly numOfPages: number | string | RegExpMatchArray;
-}
-
-async function getPDFInfo(filePath: string, id: SessionID) {
+async function getPDFInfo(filePath: string) {
     try {
         const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
             cwd: filePath,
@@ -24,10 +18,13 @@ async function getPDFInfo(filePath: string, id: SessionID) {
         const pagesLine = pdfInfoStdout
             .split('\n')
             .find((line) => line.startsWith('Pages:'));
-        if (!pagesLine) throw new Error('Could not find page count in pdfinfo output');
 
-        const numOfPages = pagesLine.match(/\d+/);
-        if (!numOfPages) throw new Error('Failed to parse page count');
+        //INFO: Get the numbers from the "Pages:" section.
+        const match = pagesLine?.match(/\d+/);
+
+        const numOfPages: number | 'Failed to parse page count' = match
+            ? Number(match[0])
+            : 'Failed to parse page count';
 
         await pdfInfoProc.exited;
 
@@ -49,7 +46,7 @@ export async function convertToPNGService(file: Buffer, fileName: string) {
         Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
 
         const filePath: string = `./src/backend/sessions/${id}/`;
-        const fileInfo: PDFInfo = await getPDFInfo(filePath, id);
+        const fileInfo: PDFInfo = await getPDFInfo(filePath);
 
         const options = {
             density: fileInfo.dpi,
