@@ -4,6 +4,8 @@
 
 - Pre-Requisites:
     - Bun (install at bun.sh)
+    - GhostScript
+    - GraphicsMagick
 
 To install dependencies:
 
