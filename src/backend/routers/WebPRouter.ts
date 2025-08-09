@@ -1,18 +1,17 @@
 import { Hono } from 'hono';
 import Middlewares from '../middlewares/middlewares.ts';
-import { JPGConvertHandler } from '../controllers/JPGConvertHandler.ts';
+import { WebPConvertHandler } from '../controllers/WebPConvertHandler.ts';
 
 const app = new Hono();
 const middlewares = new Middlewares();
 
 app.use(middlewares.FileUnzip);
-
 app.use('/png', middlewares.CheckForHeader('Accept'));
-app.use('/webp', middlewares.CheckForHeader('Accept'));
+app.use('/jpeg', middlewares.CheckForHeader('Accept'));
 app.use('/png', middlewares.PNGHeaders);
-app.use('/webp', middlewares.WebPHeaders);
+app.use('/jpeg', middlewares.JPGHeaders);
 
-app.post('/png', JPGConvertHandler);
-app.post('/webp', JPGConvertHandler);
+app.post('/jpeg', WebPConvertHandler);
+app.post('/png', WebPConvertHandler);
 
 export default app;

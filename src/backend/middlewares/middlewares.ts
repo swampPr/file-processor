@@ -11,7 +11,7 @@ export default class Middlewares {
             const file = body['file'] as File;
 
             c.set('file', file);
-            c.set('filename', file.name);
+            c.set('filename', file.name.split('.gz')[0]);
             c.set('MIME', file.type);
             c.set('size', file.size);
 
@@ -25,17 +25,17 @@ export default class Middlewares {
         }
     };
 
-    PDFGunzip = async (c: Context, next: Next) => {
+    FileUnzip = async (c: Context, next: Next) => {
         try {
             const file: File = c.get('file');
 
             const fileBuffer: ArrayBuffer = await file.arrayBuffer();
-            const decompressedPDF: Buffer = await ungzip(fileBuffer);
+            const decompressedFile: Buffer = await ungzip(fileBuffer);
             console.time('Unzip');
-            log.Log('PDF has been unzipped');
+            log.Log('File has been unzipped');
             console.timeEnd('Unzip');
 
-            c.set('decompressedPDF', decompressedPDF);
+            c.set('decompressedFile', decompressedFile);
 
             await next();
         } catch (err) {
@@ -47,23 +47,37 @@ export default class Middlewares {
         }
     };
 
+    CheckForHeader = (header: string) => {
+        return async (c: Context, next: Next) => {
+            const headerCheck: string = c.req.header(header)!;
+            if (!headerCheck) {
+                c.status(400);
+                return c.json({
+                    error: `You must provide the following header: ${header}`,
+                });
+            }
+
+            await next();
+        };
+    };
+
     JPGHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'image/jpeg');
-        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
+        c.header('X-File-Name', c.get('filename'));
 
         await next();
     };
 
     WebPHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'image/webp');
-        c.header('X-File-Name', c.get('filename').split('gz')[0]);
+        c.header('X-File-Name', c.get('filename'));
 
         await next();
     };
 
     PNGHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'image/png');
-        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
+        c.header('X-File-Name', c.get('filename'));
 
         await next();
     };
@@ -71,7 +85,7 @@ export default class Middlewares {
     PDFGzipHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'application/pdf');
         c.header('Content-Encoding', 'application/gzip');
-        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
+        c.header('X-File-Name', c.get('filename'));
 
         await next();
     };

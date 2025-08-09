@@ -5,7 +5,7 @@ const log = new Logger();
 
 export async function PDFCompressHandler(c: Context) {
     try {
-        const file: Buffer = c.get('decompressedPDF');
+        const file: Buffer = c.get('decompressedFile');
         const aggressive: string | undefined = c.req.header('X-Aggro');
 
         if (aggressive) {
