@@ -1,7 +1,6 @@
 import type { Context } from 'hono';
 import { Logger } from '../utils/utils.ts';
 import { PDFCompressService } from '../services/PDFCompressService.ts';
-
 const log = new Logger();
 
 export async function PDFCompressHandler(c: Context) {

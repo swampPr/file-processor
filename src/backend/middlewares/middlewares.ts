@@ -5,15 +5,6 @@ import { gzip, ungzip } from 'node-gzip';
 const log = new Logger();
 
 export default class Middlewares {
-    InfoHelper = (c: Context) => {
-        const name: string = c.get('filename').split('.gz')[0];
-        return {
-            name,
-            MIME: c.get('MIME'),
-            size: c.get('size'),
-        };
-    };
-
     ParseFile = async (c: Context, next: Next) => {
         try {
             const body = await c.req.parseBody();
@@ -57,40 +48,30 @@ export default class Middlewares {
     };
 
     JPGHeaders = async (c: Context, next: Next) => {
-        const fileInfo = this.InfoHelper(c);
         c.header('Content-Type', 'image/jpeg');
-        c.header('X-File-Name', fileInfo.name);
-        c.header('X-File-Type', fileInfo.MIME);
-        c.header('X-File-Size', fileInfo.size);
+        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
 
         await next();
     };
 
     WebPHeaders = async (c: Context, next: Next) => {
-        const fileInfo = this.InfoHelper(c);
         c.header('Content-Type', 'image/webp');
-        c.header('X-File-Name', fileInfo.name);
-        c.header('X-File-Type', fileInfo.MIME);
-        c.header('X-File-Size', fileInfo.size);
+        c.header('X-File-Name', c.get('filename').split('gz')[0]);
 
         await next();
     };
 
     PNGHeaders = async (c: Context, next: Next) => {
-        const fileInfo = this.InfoHelper(c);
         c.header('Content-Type', 'image/png');
-        c.header('X-File-Name', fileInfo.name);
-        c.header('X-File-Type', fileInfo.MIME);
-        c.header('X-File-Size', fileInfo.size);
+        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
 
         await next();
     };
 
     PDFGzipHeaders = async (c: Context, next: Next) => {
-        const fileInfo = this.InfoHelper(c);
         c.header('Content-Type', 'application/pdf');
         c.header('Content-Encoding', 'application/gzip');
-        c.header('X-File-Name', fileInfo.name);
+        c.header('X-File-Name', c.get('filename').split('.gz')[0]);
 
         await next();
     };
