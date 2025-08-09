@@ -10,12 +10,11 @@ app.use(middlewares.FileUnzip);
 
 app.use('/png', middlewares.CheckForHeader('Accept'));
 app.use('/webp', middlewares.CheckForHeader('Accept'));
-app.use('/png', middlewares.PNGHeaders);
-app.use('/webp', middlewares.WebPHeaders);
+app.use('/convert/png', middlewares.PNGHeaders);
+app.use('/convert/webp', middlewares.WebPHeaders);
 app.use('/compress', middlewares.JPGHeaders);
 
-app.post('/png', JPGConvertHandler);
-app.post('/webp', JPGConvertHandler);
+app.post('/convert/:format', JPGConvertHandler);
 app.post('/compress', JPGCompressHandler);
 
 export default app;

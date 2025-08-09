@@ -50,7 +50,7 @@ async function convertToJPGService(fileName: string, filePath: string) {
 
         const options = {
             density: fileInfo.dpi,
-            format: 'jpg',
+            format: 'jpeg',
             quality: 75,
             saveFilename: fileName,
             savePath: fileInfo.IMGFolder,
@@ -115,7 +115,7 @@ async function convertToPNGService(fileName: string, filePath: string) {
     }
 }
 
-export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpg') {
+export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpeg') {
     try {
         const id: SessionID = await createSession();
         Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);

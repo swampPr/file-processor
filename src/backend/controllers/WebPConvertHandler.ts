@@ -6,7 +6,7 @@ const log = new Logger();
 
 export async function WebPConvertHandler(c: Context) {
     try {
-        const format = c.req.header('Accept')!.split('/')[1];
+        const { format } = c.req.param();
 
         if (format !== 'jpeg' && format !== 'png') {
             c.status(400);
@@ -15,10 +15,9 @@ export async function WebPConvertHandler(c: Context) {
             });
         }
 
-        format === 'jpeg' ? c.header('X-File-Type', 'PNG') : c.header('X-File-Type', 'JPEG');
-
         const file: Buffer = c.get('decompressedFile');
 
+        c.header('X-File-Type', format.toUpperCase());
         const imgResponse: Buffer = await WEBPConvertInterface(file, format);
         return c.body(imgResponse);
     } catch (err) {

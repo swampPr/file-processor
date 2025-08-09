@@ -6,17 +6,17 @@ const log = new Logger();
 
 export async function JPGConvertHandler(c: Context) {
     try {
-        const format = c.req.header('Accept')!.split('/')[1];
+        const { format } = c.req.param();
         if (format !== 'webp' && format !== 'png') {
             c.status(400);
             return c.json({
                 error: 'You can only convert a JPEG to WebP or PNG',
             });
         }
-        format === 'webp' ? c.header('X-File-Type', 'WEBP') : c.header('X-File-Type', 'PNG');
 
         const file: Buffer = c.get('decompressedFile');
 
+        c.header('X-File-Type', format.toUpperCase());
         const imgResponse: Buffer = await JPGConvertInterface(file, format);
         return c.body(imgResponse);
     } catch (err) {
