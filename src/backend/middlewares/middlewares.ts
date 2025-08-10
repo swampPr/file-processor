@@ -82,6 +82,13 @@ export default class Middlewares {
         await next();
     };
 
+    PDFHeaders = async (c: Context, next: Next) => {
+        c.header('Content-Type', 'application/pdf');
+        c.header('X-File-Name', c.get('filename'));
+
+        await next();
+    };
+
     PDFGzipHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'application/pdf');
         c.header('Content-Encoding', 'application/gzip');

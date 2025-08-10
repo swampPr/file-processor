@@ -8,10 +8,10 @@ export async function PNGConvertHandler(c: Context) {
     try {
         const { format } = c.req.param();
 
-        if (format !== 'webp' && format !== 'jpeg') {
+        if (format !== 'webp' && format !== 'jpeg' && format !== 'pdf') {
             c.status(400);
             return c.json({
-                error: 'You  can only convert a PNG to WebP or JPEG',
+                error: 'You  can only convert a PNG to WebP or JPEG or PDF',
             });
         }
 

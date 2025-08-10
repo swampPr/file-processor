@@ -1,4 +1,43 @@
 import sharp from 'sharp';
+import { PDFDocument } from 'pdf-lib';
+
+async function JPGToPDF(img: Buffer) {
+    const jpgEmbed: ArrayBuffer = Uint8Array.from(img).buffer;
+
+    const pdfDoc = await PDFDocument.create();
+
+    const jpgImage = await pdfDoc.embedPng(jpgEmbed);
+
+    const jpgDims = jpgImage.scale(0.5);
+
+    const page = pdfDoc.addPage();
+
+    const maxWidth = 400;
+    const maxHeight = 500;
+
+    let drawWidth = jpgDims.width;
+    let drawHeight = jpgDims.height;
+
+    if (drawWidth > maxWidth || drawHeight > maxHeight) {
+        const scaleX = maxWidth / drawWidth;
+        const scaleY = maxHeight / drawHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        drawWidth *= scale;
+        drawHeight *= scale;
+    }
+
+    page.drawImage(jpgImage, {
+        x: (page.getWidth() - drawWidth) / 2,
+        y: (page.getHeight() - drawHeight) / 2,
+        width: drawWidth,
+        height: drawHeight,
+    });
+
+    const pdfBytes: Uint8Array = await pdfDoc.save();
+    const pdfBuf: Buffer = Buffer.from(pdfBytes);
+    return pdfBuf;
+}
 
 async function JPGToPNG(file: Buffer) {
     try {
@@ -18,12 +57,24 @@ async function JPGToWebP(file: Buffer) {
     }
 }
 
-export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png') {
+export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png' | 'pdf') {
     try {
         if (format === 'webp') {
-            const webp: Buffer = await JPGToWebP(file);
+            try {
+                const webp: Buffer = await JPGToWebP(file);
 
-            return webp;
+                return webp;
+            } catch (err) {
+                throw err;
+            }
+        } else if (format === 'pdf') {
+            try {
+                const pdf: Buffer = await JPGToPDF(file);
+
+                return pdf;
+            } catch (err) {
+                throw err;
+            }
         }
 
         const png: Buffer = await JPGToPNG(file);

@@ -8,11 +8,9 @@ const middlewares = new Middlewares();
 
 app.use(middlewares.FileUnzip);
 
-app.use('/jpeg', middlewares.CheckForHeader('Accept'));
-app.use('/webp', middlewares.CheckForHeader('Accept'));
-
 app.use('/convert/jpeg', middlewares.JPGHeaders);
 app.use('/convert/webp', middlewares.WebPHeaders);
+app.use('/convert/pdf', middlewares.PDFHeaders);
 app.use('/compress', middlewares.PNGHeaders);
 
 app.post('/compress', PNGCompressHandler);

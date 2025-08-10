@@ -7,10 +7,10 @@ const log = new Logger();
 export async function JPGConvertHandler(c: Context) {
     try {
         const { format } = c.req.param();
-        if (format !== 'webp' && format !== 'png') {
+        if (format !== 'webp' && format !== 'png' && format !== 'pdf') {
             c.status(400);
             return c.json({
-                error: 'You can only convert a JPEG to WebP or PNG',
+                error: 'You can only convert a JPEG to WebP or PNG or PDF',
             });
         }
 
