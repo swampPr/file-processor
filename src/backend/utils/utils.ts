@@ -1,5 +1,5 @@
 import { mkdir, rmdir } from 'node:fs/promises';
-import { ungzip, gzip } from 'node-gzip';
+import { gzip } from 'node-gzip';
 import chalk from 'chalk';
 
 export type SessionID = string;
@@ -19,10 +19,8 @@ export async function createSession(): Promise<SessionID> {
 export async function cleanSession(id: SessionID) {
     try {
         await rmdir(`./src/backend/sessions/${id}`, { recursive: true });
-
-        return true;
     } catch (err) {
-        throw err;
+        console.warn(chalk.rgb(255, 165, 0)(`Couldn't clean session ID: ${chalk.redBright(id)}`));
     }
 }
 

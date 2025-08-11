@@ -2,8 +2,8 @@ import { createSession, cleanSession } from '../utils/utils.ts';
 import type { SessionID } from '../utils/utils.ts';
 
 export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
+    const id: SessionID = await createSession();
     try {
-        const id: SessionID = await createSession();
         await Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
 
         if (aggressive) {
@@ -17,6 +17,8 @@ export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
         return defaultCompress;
     } catch (err) {
         throw err;
+    } finally {
+        cleanSession(id);
     }
 }
 

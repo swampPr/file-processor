@@ -116,8 +116,8 @@ async function convertToPNGService(fileName: string, filePath: string) {
 }
 
 export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpeg') {
+    const id: SessionID = await createSession();
     try {
-        const id: SessionID = await createSession();
         Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
         const inputFilePath: string = `./src/backend/sessions/${id}`;
 
@@ -129,9 +129,10 @@ export async function PDFConvertInterface(file: Buffer, fileName: string, format
         }
 
         const jpgBuf: Buffer = await convertToJPGService(fileName, inputFilePath);
-        cleanSession(id);
         return jpgBuf;
     } catch (err) {
         throw err;
+    } finally {
+        cleanSession(id);
     }
 }
