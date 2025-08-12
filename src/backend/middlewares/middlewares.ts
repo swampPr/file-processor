@@ -61,6 +61,34 @@ export default class Middlewares {
         };
     };
 
+    MP3Headers = async (c: Context, next: Next) => {
+        c.header('Content-Type', 'audio/mpeg');
+        c.header('X-File-Name', c.get('filename'));
+
+        await next();
+    };
+
+    WebMHeaders = async (c: Context, next: Next) => {
+        c.header('Content-Type', 'video/webm');
+        c.header('X-File-Name', c.get('filename'));
+
+        await next();
+    };
+
+    MP4Headers = async (c: Context, next: Next) => {
+        c.header('Content-Type', 'video/mp4');
+        c.header('X-File-Name', c.get('filename'));
+
+        await next();
+    };
+
+    FLACHeaders = async (c: Context, next: Next) => {
+        c.header('Content-Type', 'audio/flac');
+        c.header('X-File-Name', c.get('filename'));
+
+        await next();
+    };
+
     JPGHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'image/jpeg');
         c.header('X-File-Name', c.get('filename'));

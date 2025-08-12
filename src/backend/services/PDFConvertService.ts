@@ -118,7 +118,7 @@ async function convertToPNGService(fileName: string, filePath: string) {
 export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpeg') {
     const id: SessionID = await createSession();
     try {
-        Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
+        await Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
         const inputFilePath: string = `./src/backend/sessions/${id}`;
 
         if (format === 'png') {

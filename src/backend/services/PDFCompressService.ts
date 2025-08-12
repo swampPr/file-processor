@@ -1,30 +1,9 @@
 import { createSession, cleanSession } from '../utils/utils.ts';
 import type { SessionID } from '../utils/utils.ts';
 
-export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
-    const id: SessionID = await createSession();
-    try {
-        await Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
-
-        if (aggressive) {
-            const aggressiveCompress: Buffer = await compressAggressive(id);
-
-            cleanSession(id);
-            return aggressiveCompress;
-        }
-        const defaultCompress: Buffer = await compressDefault(id);
-
-        return defaultCompress;
-    } catch (err) {
-        throw err;
-    } finally {
-        cleanSession(id);
-    }
-}
-
 async function compressDefault(id: SessionID) {
     try {
-        const proc = Bun.spawn(
+        await Bun.spawn(
             [
                 'gs',
                 '-sDEVICE=pdfwrite',
@@ -41,11 +20,8 @@ async function compressDefault(id: SessionID) {
             ],
             {
                 cwd: `./src/backend/sessions/${id}`,
-                stdout: 'inherit',
-                stderr: 'inherit',
             }
-        );
-        await proc.exited;
+        ).exited;
         const outputFile = Bun.file(`./src/backend/sessions/${id}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
         return outputBuffer;
@@ -54,9 +30,9 @@ async function compressDefault(id: SessionID) {
     }
 }
 
-async function compressAggressive(id: SessionID) {
+async function compressAggressive(sessionPath: string) {
     try {
-        const proc = Bun.spawn(
+        await Bun.spawn(
             [
                 'gs',
                 '-sDEVICE=pdfwrite',
@@ -82,16 +58,35 @@ async function compressAggressive(id: SessionID) {
                 'input.pdf',
             ],
             {
-                cwd: `./src/backend/sessions/${id}`,
-                stdout: 'inherit',
-                stderr: 'inherit',
+                cwd: sessionPath,
             }
-        );
-        await proc.exited;
-        const outputFile = Bun.file(`./src/backend/sessions/${id}/output.pdf`);
+        ).exited;
+        const outputFile = Bun.file(`${sessionPath}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
         return outputBuffer;
     } catch (err) {
         throw err;
+    }
+}
+
+export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
+    const id: SessionID = await createSession();
+    try {
+        const sesssionPath = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sesssionPath}/input.pdf`, file);
+
+        if (aggressive) {
+            const aggressiveCompress: Buffer = await compressAggressive(sesssionPath);
+
+            cleanSession(id);
+            return aggressiveCompress;
+        }
+        const defaultCompress: Buffer = await compressDefault(sesssionPath);
+
+        return defaultCompress;
+    } catch (err) {
+        throw err;
+    } finally {
+        cleanSession(id);
     }
 }
