@@ -1,6 +1,6 @@
 import type { Context, Next } from 'hono';
 import { Logger } from '../utils/utils.ts';
-import { gzip, ungzip } from 'node-gzip';
+import { ungzip } from 'node-gzip';
 
 const log = new Logger();
 
