@@ -74,7 +74,7 @@ async function compressMP4Aggressive(sessionPath: string) {
 }
 
 export async function MP4CompressService(file: Buffer, aggro: Boolean) {
-    const id = await createSession();
+    const id: SessionID = await createSession();
     try {
         const sessionPath = `./src/backend/sessions/${id}`;
         await Bun.write(`${sessionPath}/input.mp4`, file);
