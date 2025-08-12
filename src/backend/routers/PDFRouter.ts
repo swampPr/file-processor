@@ -6,8 +6,6 @@ import { PDFConvertHandler } from '../controllers/PDFConvertHandler.ts';
 const app = new Hono();
 const middlewares = new Middlewares();
 
-app.use(middlewares.FileUnzip);
-
 app.use('/compress', middlewares.PDFGzipHeaders);
 app.use('/convert/png', middlewares.PNGHeaders);
 app.use('/convert/jpeg', middlewares.JPGHeaders);

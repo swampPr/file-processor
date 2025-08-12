@@ -6,8 +6,6 @@ import { JPGCompressHandler } from '../controllers/JPGCompressHandler.ts';
 const app = new Hono();
 const middlewares = new Middlewares();
 
-app.use(middlewares.FileUnzip);
-
 app.use('/convert/png', middlewares.PNGHeaders);
 app.use('/convert/webp', middlewares.WebPHeaders);
 app.use('/compress', middlewares.JPGHeaders);
