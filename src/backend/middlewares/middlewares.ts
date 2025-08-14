@@ -13,7 +13,9 @@ export default class Middlewares {
             c.set('file', file);
             c.set('filename', file.name.split('.gz')[0]);
             c.set('MIME', file.type);
-            c.set('size', file.size);
+            c.set('fileSize', file.size);
+
+            c.header('X-File-Size', c.get('fileSize'));
 
             await next();
         } catch (err) {
