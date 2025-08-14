@@ -1,6 +1,23 @@
 import { createSession, cleanSession } from '../utils/utils.ts';
 import type { SessionID } from '../utils/utils.ts';
 
+async function checkFormat(sessionPath: string) {
+    try {
+        const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
+            cwd: sessionPath,
+            stderr: 'pipe',
+            stdout: 'pipe',
+        });
+        const output = await proc.stdout.text();
+
+        await proc.exited;
+
+        return output.toLowerCase().includes('pdf version');
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function compressDefault(sessionPath: string) {
     try {
         const proc = Bun.spawn(
@@ -20,15 +37,10 @@ async function compressDefault(sessionPath: string) {
             ],
             {
                 cwd: sessionPath,
-                stderr: 'ignore',
-                stdout: 'ignore',
             }
         );
 
         await proc.exited;
-
-        if (proc.exitCode !== null)
-            throw new Error(`Ghostscript exited with code ${proc.exitCode}`);
 
         const outputFile = Bun.file(`${sessionPath}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
@@ -67,15 +79,10 @@ async function compressAggressive(sessionPath: string) {
             ],
             {
                 cwd: sessionPath,
-                stderr: 'ignore',
-                stdout: 'ignore',
             }
         );
 
         await proc.exited;
-
-        if (proc.exitCode !== null)
-            throw new Error(`Ghostscript exited with code ${proc.exitCode}`);
 
         const outputFile = Bun.file(`${sessionPath}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
@@ -91,15 +98,14 @@ export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
         const sessionPath = `./src/backend/sessions/${id}`;
         await Bun.write(`${sessionPath}/input.pdf`, file);
 
+        const isPDF: Boolean = await checkFormat(sessionPath);
+        if (!isPDF) throw new Error('File is NOT a PDF file');
+
         if (aggressive) {
-            const aggressiveCompress: Buffer = await compressAggressive(sessionPath);
-
-            cleanSession(id);
-            return aggressiveCompress;
+            return await compressAggressive(sessionPath);
         }
-        const defaultCompress: Buffer = await compressDefault(sessionPath);
 
-        return defaultCompress;
+        return await compressDefault(sessionPath);
     } catch (err) {
         throw err;
     } finally {

@@ -1,4 +1,3 @@
-import { stderr } from 'node:process';
 import type { SessionID } from '../utils/utils.ts';
 import { Logger } from '../utils/utils.ts';
 import { cleanSession, createSession } from '../utils/utils.ts';
@@ -15,23 +14,32 @@ type PDFInfo = {
     readonly numOfPages: number | 'Failed to parse page count';
 };
 
+async function checkFormat(sessionPath: string) {
+    try {
+        const proc = Bun.spawn(['pdfingo', 'input.pdf'], {
+            cwd: sessionPath,
+            stderr: 'pipe',
+            stdout: 'pipe',
+        });
+        const output = await proc.stdout.text();
+
+        await proc.exited;
+
+        return output.includes('pdf version');
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function getPDFInfo(filePath: string) {
     try {
         const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
             cwd: filePath,
-            stdout: 'pipe',
-            stderr: 'pipe',
+            stdout: 'ignore',
+            stderr: 'ignore',
         });
 
         const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
-        const pdfInfoStderr = await new Response(pdfInfoProc.stderr).text();
-
-        if (
-            pdfInfoStderr.toLowerCase().includes('syntax error') ||
-            pdfInfoStderr.toLowerCase().includes('may not be a pdf file')
-        ) {
-            throw new Error(`File is not a PDF file`);
-        }
 
         const pagesLine = pdfInfoStdout.split('\n').find((line) => line.startsWith('Pages:'));
 
@@ -129,18 +137,17 @@ async function convertToPNGService(fileName: string, filePath: string) {
 export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpeg') {
     const id: SessionID = await createSession();
     try {
-        await Bun.write(`./src/backend/sessions/${id}/input.pdf`, file);
-        const inputFilePath: string = `./src/backend/sessions/${id}`;
+        const sessionPath: string = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sessionPath}/input.pdf`, file);
+
+        const isPDF: Boolean = await checkFormat(sessionPath);
+        if (!isPDF) throw new Error('File is NOT a PDF file');
 
         if (format === 'png') {
-            const pngBuf: Buffer = await convertToPNGService(fileName, inputFilePath);
-
-            cleanSession(id);
-            return pngBuf;
+            return await convertToPNGService(fileName, sessionPath);
         }
 
-        const jpgBuf: Buffer = await convertToJPGService(fileName, inputFilePath);
-        return jpgBuf;
+        return await convertToJPGService(fileName, sessionPath);
     } catch (err) {
         throw err;
     } finally {
