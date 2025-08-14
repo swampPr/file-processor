@@ -30,7 +30,7 @@
 }
 
 /* Styled label as the custom upload button */
-#file-upload-section label {
+#file-upload-section #upload-btn {
     display: inline-block;
     padding: 1rem 2rem;
     background-color: var(--color-primary);
@@ -42,7 +42,7 @@
     transition: background-color 0.2s ease;
 }
 
-#file-upload-section label:hover {
+#file-upload-section {
     background-color: #333;
 }
 
@@ -195,4 +195,91 @@
 
 #upload-file-btn:active {
     transform: translateY(0); /* reset on click */
+}
+
+/* Download file section */
+#download-file {
+    display: none; /* hidden until JS activates it */
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e8e8eb; /* light gray background for separation */
+    border: 2px solid #26292e;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Info paragraph inside download section */
+#returned-file-info {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-body-text);
+}
+
+/* Download link styled as a button */
+#download-file-link {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #1e88e5; /* blue button */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+#download-file-link:hover {
+    background-color: #1565c0;
+    transform: translateY(-1px);
+}
+
+#download-file-lflex:active {
+    transform: translateY(0);
+}
+
+/* Aggressive Compression Checkbox */
+#aggressive-label {
+    display: inline-block;
+    padding: 0.3rem 0.6rem; /* gives a little "breathing room" */
+    margin-bottom: 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-body-text);
+    cursor: pointer;
+    user-select: none; /* prevent text selection */
+    margin: 0.5rem 0 1rem 0; /* space above and below */
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+#aggressive-label input[type='checkbox'] {
+    margin-right: 0.5rem; /* space between checkbox and text */
+    vertical-align: middle;
+}
+
+#aggressive-label:hover {
+    background-color: #dcdcdc; /* subtle light overlay on hover */
+}
+
+#aggressive-check {
+    width: 18px;
+    height: 18px;
+    accent-color: #d32f2f; /* red-ish checkbox for "aggressive" */
+    cursor: pointer;
+}
+
+#upload-controls {
+    display: flex;
+    flex-direction: column; /* stack elements vertically */
+    align-items: center; /* or center if you want centered */
+    gap: 0.5rem; /* spacing between checkbox and button */
 }

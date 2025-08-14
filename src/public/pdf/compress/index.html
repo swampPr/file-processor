@@ -39,9 +39,15 @@
                     Click the box below and upload the PDF document you'd like to compress
                 </p>
 
-                <label for="upload-pdf" id="upload-btn">Select PDF File</label>
-                <input type="file" accept="application/pdf" id="upload-pdf" />
+                <div id="upload-controls">
+                    <label for="aggressive-check" id="aggressive-label">
+                        <input id="aggressive-check" type="checkbox" />
+                        Enable Aggressive Compression
+                    </label>
 
+                    <label for="upload-pdf" id="upload-btn">Select PDF File</label>
+                    <input type="file" accept="application/pdf" id="upload-pdf" />
+                </div>
                 <div id="error-wrapper">
                     <span id="error"></span>
                 </div>
@@ -60,6 +66,9 @@
 
             <div id="download-file">
                 <p id="returned-file-info"></p>
+                <a id="download-file-link">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                </a>
             </div>
         </section>
 
