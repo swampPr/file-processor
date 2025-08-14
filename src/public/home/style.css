@@ -1,0 +1,124 @@
+/* -----------------------
+   Home Page Section Styles
+   ----------------------- */
+
+#page-info-section {
+    background-color: #e0e0e5; /* slightly darker than body */
+    padding: 2rem 2rem 3rem 2rem;
+    text-align: center;
+    border-bottom: 2px solid var(--color-separator);
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+#info-header {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #111111;
+}
+
+#icons-section {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.format-icon {
+    font-size: 2.5rem; /* uniform size */
+    color: #000000;
+    transition:
+        transform 0.2s,
+        color 0.2s;
+    cursor: default; /* or pointer if clickable later */
+}
+
+.format-icon:hover {
+    transform: scale(1.2);
+    color: #1a1a1a; /* subtle darkening on hover */
+}
+
+#info-paragraph {
+    font-size: 1.1rem; /* slightly bigger */
+    line-height: 1.6;
+    color: #222222;
+    max-width: 700px;
+    margin: 0 auto; /* center text */
+}
+
+/* -----------------------
+   Links Section Styles
+   ----------------------- */
+
+#links-sections {
+    padding: 2rem;
+}
+
+#links-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem; /* space between boxes */
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+#links-list li {
+    border: 2px solid var(--color-separator);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    flex: 1 1 220px; /* grow/shrink, min width 220px */
+    max-width: 250px;
+    background-color: #ffffff;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+
+    display: flex; /* make li a flex container */
+    align-items: center; /* vertically center icon + text */
+}
+
+#links-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#links-list a {
+    text-decoration: none;
+    color: #000000; /* solid black text */
+    display: flex;
+    align-items: center;
+    width: 100%; /* ensure link fills li for proper alignment */
+    gap: 0.8rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+/* Icon colors */
+.pdf-link-icon {
+    color: #d9534f; /* medium red */
+    font-size: 1.8rem;
+}
+
+.png-link-icon {
+    color: #5bc0de; /* medium blue */
+    font-size: 1.8rem;
+}
+
+.webp-link-icon {
+    color: #5cb85c; /* medium green */
+    font-size: 1.8rem;
+}
+
+.jpeg-link-icon {
+    color: #f0ad4e; /* medium yellow/orange */
+    font-size: 1.8rem;
+}
+
+.mp4-link-icon {
+    color: #9467bd; /* medium purple */
+    font-size: 1.8rem;
+}

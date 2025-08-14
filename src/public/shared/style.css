@@ -1,0 +1,64 @@
+/* -----------------------
+   Shared Styles
+   -----------------------
+   INFO: MADE BY CHATGPT BECAUSE I HATE CSS
+
+ */
+
+/* Base color scheme */
+:root {
+    --color-primary: #000000; /* Navbar background */
+    --color-primary-text: #ffffff; /* Text/icons in navbar */
+    --color-body-bg: #f5f5f7; /* Light page background */
+    --color-body-text: #222222; /* Default body text */
+    --color-separator: #dcdcdc; /* Border/separation color */
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Reset margins/padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    background-color: var(--color-body-bg);
+    font-family: var(--font-primary);
+    color: var(--color-body-text);
+}
+
+/* navbar styling */
+#navbar {
+    background-color: var(--color-primary);
+    padding: 1rem 2rem;
+    border-bottom: 3px solid var(--color-separator);
+}
+
+#header-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary-text) !important;
+    text-decoration: none;
+}
+
+#header {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#header i {
+    color: var(--color-primary-text);
+}
+
+/* body separation */
+body > h1,
+body > a {
+    margin-left: 2rem;
+    margin-top: 1rem;
+}
