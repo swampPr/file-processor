@@ -22,6 +22,7 @@ export async function PNGConvertHandler(c: Context) {
         return c.body(imgResponse);
     } catch (err) {
         log.Error(err);
+        c.status(500);
         return c.json({
             error: 'Something went wrong...',
         });

@@ -1,4 +1,6 @@
 import sharp from 'sharp';
+import type { SessionID } from '../utils/utils.ts';
+import { cleanSession, createSession, checkFormat } from '../utils/utils.ts';
 import { PDFDocument } from 'pdf-lib';
 
 async function PNGToPDF(img: Buffer) {
@@ -58,7 +60,14 @@ async function PNGToWebP(file: Buffer) {
 }
 
 export async function PNGConvertInterface(file: Buffer, format: 'webp' | 'jpeg' | 'pdf') {
+    const id: SessionID = await createSession();
     try {
+        const sessionPath: string = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sessionPath}/input.png`, file);
+
+        const isPNG: Boolean = await checkFormat(sessionPath, 'input.png', 'png');
+        if (!isPNG) throw new Error('File is NOT a PNG file');
+
         if (format === 'webp') {
             try {
                 const webp: Buffer = await PNGToWebP(file);
@@ -82,5 +91,7 @@ export async function PNGConvertInterface(file: Buffer, format: 'webp' | 'jpeg' 
         return jpg;
     } catch (err) {
         throw err;
+    } finally {
+        cleanSession(id);
     }
 }

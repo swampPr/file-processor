@@ -1,3 +1,4 @@
+import { stderr } from 'node:process';
 import type { SessionID } from '../utils/utils.ts';
 import { Logger } from '../utils/utils.ts';
 import { cleanSession, createSession } from '../utils/utils.ts';
@@ -18,9 +19,20 @@ async function getPDFInfo(filePath: string) {
     try {
         const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
             cwd: filePath,
+            stdout: 'pipe',
+            stderr: 'pipe',
         });
 
         const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
+        const pdfInfoStderr = await new Response(pdfInfoProc.stderr).text();
+
+        if (
+            pdfInfoStderr.toLowerCase().includes('syntax error') ||
+            pdfInfoStderr.toLowerCase().includes('may not be a pdf file')
+        ) {
+            throw new Error(`File is not a PDF file`);
+        }
+
         const pagesLine = pdfInfoStdout.split('\n').find((line) => line.startsWith('Pages:'));
 
         //INFO: Get the numbers from the "Pages:" section.
@@ -94,7 +106,6 @@ async function convertToPNGService(fileName: string, filePath: string) {
         const convert = fromPath(`${filePath}/input.pdf`, options);
 
         const convertedInfo = await convert.bulk(-1, { responseType: 'image' });
-        log.Log('PDF Now converted to PNG');
 
         if (
             fileInfo.numOfPages === 'Failed to parse page count' ||

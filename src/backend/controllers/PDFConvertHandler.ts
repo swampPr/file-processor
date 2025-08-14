@@ -24,7 +24,7 @@ export async function PDFConvertHandler(c: Context) {
     } catch (err) {
         log.Error(err);
         c.status(500);
-        c.json({
+        return c.json({
             error: 'Something went wrong...',
         });
     }

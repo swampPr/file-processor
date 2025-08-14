@@ -1,5 +1,7 @@
 import sharp from 'sharp';
 import { PDFDocument } from 'pdf-lib';
+import type { SessionID } from '../utils/utils.ts';
+import { cleanSession, createSession, checkFormat } from '../utils/utils.ts';
 
 async function JPGToPDF(img: Buffer) {
     const jpgEmbed: ArrayBuffer = Uint8Array.from(img).buffer;
@@ -58,7 +60,14 @@ async function JPGToWebP(file: Buffer) {
 }
 
 export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png' | 'pdf') {
+    const id: SessionID = await createSession();
     try {
+        const sessionPath = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sessionPath}/input.jpeg`, file);
+
+        const isJPG: Boolean = await checkFormat(sessionPath, 'input.jpeg', 'jpeg');
+        if (!isJPG) throw new Error('File is NOT a JPEG image');
+
         if (format === 'webp') {
             try {
                 const webp: Buffer = await JPGToWebP(file);
@@ -82,5 +91,7 @@ export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png' |
         return png;
     } catch (err) {
         throw err;
+    } finally {
+        cleanSession(id);
     }
 }

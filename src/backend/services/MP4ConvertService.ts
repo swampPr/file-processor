@@ -1,5 +1,6 @@
 import type { SessionID } from '../utils/utils.ts';
 import { cleanSession, createSession } from '../utils/utils.ts';
+import { checkFormat } from '../utils/utils.ts';
 
 async function MP4ToMP3(sessionPath: string) {
     try {
@@ -85,6 +86,10 @@ export async function MP4ConvertService(file: Buffer, format: 'mp3' | 'webm' | '
     try {
         const sessionPath: string = `./src/backend/sessions/${id}`;
         await Bun.write(`${sessionPath}/input.mp4`, file);
+
+        const isMP4: Boolean = await checkFormat(sessionPath, 'input.mp4', 'mp4');
+        if (!isMP4) throw new Error('File is NOT an MP4 file');
+
         if (format === 'mp3') {
             const mp3Buf: Buffer = await MP4ToMP3(sessionPath);
             return mp3Buf;

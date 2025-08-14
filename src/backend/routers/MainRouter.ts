@@ -9,7 +9,6 @@ import MP4Router from './MP4Router.ts';
 const app = new Hono();
 const middlewares = new Middlewares();
 
-//TODO: Add a middleware that checks whether the file sent is a gzip if not then return status 400
 app.use(middlewares.ParseFile);
 app.use(middlewares.FileUnzip);
 

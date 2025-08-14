@@ -29,8 +29,8 @@ export default class Middlewares {
         try {
             const file: File = c.get('file');
 
-            const fileBuffer: ArrayBuffer = await file.arrayBuffer();
-            const decompressedFile: Buffer = await ungzip(fileBuffer);
+            const fileArrBuffer: ArrayBuffer = await file.arrayBuffer();
+            const decompressedFile: Buffer = await ungzip(fileArrBuffer);
             console.time('Unzip');
             log.Log('File has been unzipped');
             console.timeEnd('Unzip');
@@ -112,14 +112,6 @@ export default class Middlewares {
 
     PDFHeaders = async (c: Context, next: Next) => {
         c.header('Content-Type', 'application/pdf');
-        c.header('X-File-Name', c.get('filename'));
-
-        await next();
-    };
-
-    PDFGzipHeaders = async (c: Context, next: Next) => {
-        c.header('Content-Type', 'application/pdf');
-        c.header('Content-Encoding', 'application/gzip');
         c.header('X-File-Name', c.get('filename'));
 
         await next();

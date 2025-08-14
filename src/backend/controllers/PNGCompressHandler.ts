@@ -6,7 +6,7 @@ const log = new Logger();
 
 export async function PNGCompressHandler(c: Context) {
     try {
-        const file = c.get('decompressedFile');
+        const file: Buffer = c.get('decompressedFile');
 
         const compressedPNG: Buffer = await PNGCompressService(file);
 
@@ -15,7 +15,7 @@ export async function PNGCompressHandler(c: Context) {
     } catch (err) {
         log.Error(err);
         c.status(500);
-        c.json({
+        return c.json({
             error: 'Something went wrong...',
         });
     }

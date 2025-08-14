@@ -1,4 +1,6 @@
 import sharp from 'sharp';
+import type { SessionID } from '../utils/utils.ts';
+import { cleanSession, createSession, checkFormat } from '../utils/utils.ts';
 
 async function WEBPToPNG(file: Buffer) {
     try {
@@ -19,7 +21,14 @@ async function WEBPToJPG(file: Buffer) {
 }
 
 export async function WEBPConvertInterface(file: Buffer, format: 'png' | 'jpeg') {
+    const id: SessionID = await createSession();
     try {
+        const sessionPath: string = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sessionPath}/input.webp`, file);
+
+        const isWEBP: Boolean = await checkFormat(sessionPath, 'input.webp', 'webp');
+        if (!isWEBP) throw new Error('File is NOT a WebP file');
+
         if (format === 'jpeg') {
             const jpg: Buffer = await WEBPToJPG(file);
 
@@ -31,5 +40,7 @@ export async function WEBPConvertInterface(file: Buffer, format: 'png' | 'jpeg')
         return png;
     } catch (err) {
         throw err;
+    } finally {
+        cleanSession(id);
     }
 }

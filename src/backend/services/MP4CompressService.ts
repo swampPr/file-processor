@@ -1,9 +1,10 @@
 import type { SessionID } from '../utils/utils.ts';
+import { checkFormat } from '../utils/utils.ts';
 import { createSession, cleanSession } from '../utils/utils.ts';
 
 async function compressMP4(sessionPath: string) {
     try {
-        await Bun.spawn(
+        const proc = Bun.spawn(
             [
                 'ffmpeg',
                 '-hide_banner',
@@ -26,7 +27,9 @@ async function compressMP4(sessionPath: string) {
             {
                 cwd: sessionPath,
             }
-        ).exited;
+        );
+
+        await proc.exited;
 
         const outputFile = Bun.file(`${sessionPath}/output.mp4`);
         const compressedBuf: Buffer = Buffer.from(await outputFile.arrayBuffer());
@@ -78,6 +81,9 @@ export async function MP4CompressService(file: Buffer, aggro: Boolean) {
     try {
         const sessionPath = `./src/backend/sessions/${id}`;
         await Bun.write(`${sessionPath}/input.mp4`, file);
+
+        const isMP4: Boolean = await checkFormat(sessionPath, 'input.mp4', 'mp4');
+        if (!isMP4) throw new Error('File is NOT an MP4 file');
 
         if (aggro) {
             const compressedBuf: Buffer = await compressMP4Aggressive(sessionPath);

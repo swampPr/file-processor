@@ -15,7 +15,7 @@ export async function WEBPCompressHandler(c: Context) {
     } catch (err) {
         log.Error(err);
         c.status(500);
-        c.json({
+        return c.json({
             error: 'Something went wrong...',
         });
     }

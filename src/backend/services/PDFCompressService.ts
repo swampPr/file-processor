@@ -1,9 +1,9 @@
 import { createSession, cleanSession } from '../utils/utils.ts';
 import type { SessionID } from '../utils/utils.ts';
 
-async function compressDefault(id: SessionID) {
+async function compressDefault(sessionPath: string) {
     try {
-        await Bun.spawn(
+        const proc = Bun.spawn(
             [
                 'gs',
                 '-sDEVICE=pdfwrite',
@@ -19,10 +19,18 @@ async function compressDefault(id: SessionID) {
                 'input.pdf',
             ],
             {
-                cwd: `./src/backend/sessions/${id}`,
+                cwd: sessionPath,
+                stderr: 'ignore',
+                stdout: 'ignore',
             }
-        ).exited;
-        const outputFile = Bun.file(`./src/backend/sessions/${id}/output.pdf`);
+        );
+
+        await proc.exited;
+
+        if (proc.exitCode !== null)
+            throw new Error(`Ghostscript exited with code ${proc.exitCode}`);
+
+        const outputFile = Bun.file(`${sessionPath}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
         return outputBuffer;
     } catch (err) {
@@ -32,7 +40,7 @@ async function compressDefault(id: SessionID) {
 
 async function compressAggressive(sessionPath: string) {
     try {
-        await Bun.spawn(
+        const proc = Bun.spawn(
             [
                 'gs',
                 '-sDEVICE=pdfwrite',
@@ -59,8 +67,16 @@ async function compressAggressive(sessionPath: string) {
             ],
             {
                 cwd: sessionPath,
+                stderr: 'ignore',
+                stdout: 'ignore',
             }
-        ).exited;
+        );
+
+        await proc.exited;
+
+        if (proc.exitCode !== null)
+            throw new Error(`Ghostscript exited with code ${proc.exitCode}`);
+
         const outputFile = Bun.file(`${sessionPath}/output.pdf`);
         const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
         return outputBuffer;
@@ -72,16 +88,16 @@ async function compressAggressive(sessionPath: string) {
 export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
     const id: SessionID = await createSession();
     try {
-        const sesssionPath = `./src/backend/sessions/${id}`;
-        await Bun.write(`${sesssionPath}/input.pdf`, file);
+        const sessionPath = `./src/backend/sessions/${id}`;
+        await Bun.write(`${sessionPath}/input.pdf`, file);
 
         if (aggressive) {
-            const aggressiveCompress: Buffer = await compressAggressive(sesssionPath);
+            const aggressiveCompress: Buffer = await compressAggressive(sessionPath);
 
             cleanSession(id);
             return aggressiveCompress;
         }
-        const defaultCompress: Buffer = await compressDefault(sesssionPath);
+        const defaultCompress: Buffer = await compressDefault(sessionPath);
 
         return defaultCompress;
     } catch (err) {
