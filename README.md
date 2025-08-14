@@ -20,3 +20,5 @@ bun start
 ```
 
 open http://localhost:3000
+
+NOTE: You can change the port by going to src/index.ts scroll down to export default and change the port to whichever one you want to use.
