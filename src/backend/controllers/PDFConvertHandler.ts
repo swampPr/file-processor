@@ -18,6 +18,12 @@ export async function PDFConvertHandler(c: Context) {
         }
 
         const convertedFile = await PDFConvertInterface(file, fileName, format);
+        if ('isZip' in convertedFile) {
+            c.header('X-File-Type', 'ZIP');
+            c.header('Content-Type', 'application/zip');
+
+            return c.body(convertedFile.zipBuffer);
+        }
 
         c.header('X-File-Type', format!.toUpperCase());
         return c.body(convertedFile);

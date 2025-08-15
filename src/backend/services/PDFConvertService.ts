@@ -3,20 +3,18 @@ import { Logger } from '../utils/utils.ts';
 import { cleanSession, createSession } from '../utils/utils.ts';
 import AdmZip from 'adm-zip';
 import { mkdir } from 'node:fs/promises';
-import { fromPath } from 'pdf2pic';
 
 const zip = new AdmZip();
 const log = new Logger();
 
 type PDFInfo = {
     readonly IMGFolder: string;
-    readonly dpi: number;
     readonly numOfPages: number | 'Failed to parse page count';
 };
 
 async function checkFormat(sessionPath: string) {
     try {
-        const proc = Bun.spawn(['pdfingo', 'input.pdf'], {
+        const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
             cwd: sessionPath,
             stderr: 'pipe',
             stdout: 'pipe',
@@ -25,7 +23,7 @@ async function checkFormat(sessionPath: string) {
 
         await proc.exited;
 
-        return output.includes('pdf version');
+        return output.toLowerCase().includes('pdf version');
     } catch (err) {
         throw err;
     }
@@ -35,8 +33,8 @@ async function getPDFInfo(filePath: string) {
     try {
         const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
             cwd: filePath,
-            stdout: 'ignore',
-            stderr: 'ignore',
+            stdout: 'pipe',
+            stderr: 'pipe',
         });
 
         const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
@@ -56,7 +54,6 @@ async function getPDFInfo(filePath: string) {
 
         return {
             IMGFolder: `${filePath}/images`,
-            dpi: 96,
             numOfPages,
         };
     } catch (err) {
@@ -68,17 +65,10 @@ async function convertToJPGService(fileName: string, filePath: string) {
     try {
         const fileInfo: PDFInfo = await getPDFInfo(filePath);
 
-        const options = {
-            density: fileInfo.dpi,
-            format: 'jpeg',
-            quality: 75,
-            saveFilename: fileName,
-            savePath: fileInfo.IMGFolder,
-        };
+        await Bun.spawn(['convert', `input.pdf`, `./images/${fileName}.jpeg`], {
+            cwd: filePath,
+        }).exited;
 
-        const convert = fromPath(`${filePath}/input.pdf`, options);
-
-        const convertedInfo = await convert.bulk(-1, { responseType: 'image' });
         log.Log('PDF Now converted to JPEG');
 
         if (
@@ -88,10 +78,13 @@ async function convertToJPGService(fileName: string, filePath: string) {
             await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
             const zipToBuffer: Buffer = await zip.toBufferPromise();
 
-            return zipToBuffer;
+            return {
+                zipBuffer: zipToBuffer,
+                isZip: true,
+            };
         }
 
-        const converted = Bun.file(`${convertedInfo[0]!.path}`);
+        const converted = Bun.file(`${filePath}/images/${fileName}.jpeg`);
         const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
         return convertedBuf;
     } catch (err) {
@@ -103,17 +96,9 @@ async function convertToPNGService(fileName: string, filePath: string) {
     try {
         const fileInfo: PDFInfo = await getPDFInfo(filePath);
 
-        const options = {
-            density: fileInfo.dpi,
-            format: 'png',
-            quality: 75,
-            saveFilename: fileName,
-            savePath: fileInfo.IMGFolder,
-        };
-
-        const convert = fromPath(`${filePath}/input.pdf`, options);
-
-        const convertedInfo = await convert.bulk(-1, { responseType: 'image' });
+        await Bun.spawn(['convert', 'input.pdf', `./images/${fileName}.png`], {
+            cwd: filePath,
+        }).exited;
 
         if (
             fileInfo.numOfPages === 'Failed to parse page count' ||
@@ -122,10 +107,13 @@ async function convertToPNGService(fileName: string, filePath: string) {
             await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
             const zipToBuffer: Buffer = await zip.toBufferPromise();
 
-            return zipToBuffer;
+            return {
+                zipBuffer: zipToBuffer,
+                isZip: true,
+            };
         }
 
-        const converted = Bun.file(`${convertedInfo[0]!.path}`);
+        const converted = Bun.file(`${filePath}/images/${fileName}.png`);
         const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
 
         return convertedBuf;
@@ -138,16 +126,17 @@ export async function PDFConvertInterface(file: Buffer, fileName: string, format
     const id: SessionID = await createSession();
     try {
         const sessionPath: string = `./src/backend/sessions/${id}`;
+        const baseName = fileName.replace(/\.[^/.]+$/, '');
         await Bun.write(`${sessionPath}/input.pdf`, file);
 
         const isPDF: Boolean = await checkFormat(sessionPath);
         if (!isPDF) throw new Error('File is NOT a PDF file');
 
         if (format === 'png') {
-            return await convertToPNGService(fileName, sessionPath);
+            return await convertToPNGService(baseName, sessionPath);
         }
 
-        return await convertToJPGService(fileName, sessionPath);
+        return await convertToJPGService(baseName, sessionPath);
     } catch (err) {
         throw err;
     } finally {
