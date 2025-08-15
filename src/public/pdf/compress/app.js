@@ -90,9 +90,10 @@ uploadTag.addEventListener('change', () => {
 
 uploadFileBtn.addEventListener('click', async () => {
     const below500mb = checkSize(file);
-    if (!below500mb) {
+    const { error } = below500mb;
+    if (error) {
         errorWrapper.style.display = 'block';
-        document.getElementById('error').textContent = 'File is too large';
+        document.getElementById('error').textContent = error;
 
         return;
     }
@@ -108,12 +109,10 @@ uploadFileBtn.addEventListener('click', async () => {
         const formData = new FormData();
         formData.append('file', gzippedFile);
 
-        let fileInfo;
-        if (document.getElementById('aggressive-check').checked) {
-            fileInfo = await fetchCompressed(formData, true);
-        } else {
-            fileInfo = await fetchCompressed(formData);
-        }
+        const fileInfo = await fetchCompressed(
+            formData,
+            document.getElementById('aggressive-check').checked ? true : undefined
+        );
 
         const { error } = fileInfo;
         if (error) {

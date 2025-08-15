@@ -29,5 +29,5 @@ export function turnToFile(blob, fileName, mimeType, ext = false) {
         return new File([blob], name, { type: mimeType });
     }
 
-    return new File([blob], { type: mimeType });
+    return new File([blob], fileName, { type: mimeType });
 }
