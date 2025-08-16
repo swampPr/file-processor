@@ -26,7 +26,7 @@ async function fetchCompressed(formData, aggressive = false) {
             const error = await response.json();
             return error;
         } else if (response.status === 400) {
-            console.log(await response.json());
+            console.error(await response.json());
             return {
                 error: 'Something went wrong...',
             };
@@ -118,6 +118,8 @@ uploadFileBtn.addEventListener('click', async () => {
         if (error) {
             errorWrapper.style.display = 'block';
             document.getElementById('error').textContent = error;
+            spinner.style.display = 'none';
+
             return;
         }
 

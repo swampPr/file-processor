@@ -21,7 +21,7 @@ async function fetchConverted(formData, format) {
             const error = response.json();
             return error;
         } else if (response.status === 400) {
-            console.log(await response.json());
+            console.error(await response.json());
             return {
                 error: 'Something went wrong...',
             };

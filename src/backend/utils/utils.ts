@@ -14,7 +14,7 @@ export async function checkFormat(sessionPath: string, fileName: string, formatT
                 '-select_streams',
                 'v:0',
                 '-show_entries',
-                'format=format_name,stream=codec_name',
+                'format=format_name:stream=codec_name',
                 '-of',
                 'csv=p=0:s=,',
                 fileName,
@@ -22,6 +22,7 @@ export async function checkFormat(sessionPath: string, fileName: string, formatT
             {
                 cwd: sessionPath,
                 stdout: 'pipe',
+                stderr: 'inherit',
             }
         );
 
