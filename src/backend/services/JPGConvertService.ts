@@ -8,7 +8,7 @@ async function JPGToPDF(img: Buffer) {
 
     const pdfDoc = await PDFDocument.create();
 
-    const jpgImage = await pdfDoc.embedPng(jpgEmbed);
+    const jpgImage = await pdfDoc.embedJpg(jpgEmbed);
 
     const jpgDims = jpgImage.scale(0.5);
 

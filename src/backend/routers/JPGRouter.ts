@@ -8,6 +8,7 @@ const middlewares = new Middlewares();
 
 app.use('/convert/png', middlewares.PNGHeaders);
 app.use('/convert/webp', middlewares.WebPHeaders);
+app.use('/convert/pdf', middlewares.PDFHeaders);
 app.use('/compress', middlewares.JPGHeaders);
 
 app.post('/convert/:format', JPGConvertHandler);
