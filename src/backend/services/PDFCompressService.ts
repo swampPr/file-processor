@@ -2,94 +2,82 @@ import { createSession, cleanSession } from '../utils/utils.ts';
 import type { SessionID } from '../utils/utils.ts';
 
 async function checkFormat(sessionPath: string) {
-    try {
-        const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
-            cwd: sessionPath,
-            stderr: 'pipe',
-            stdout: 'pipe',
-        });
-        const output = await proc.stdout.text();
+    const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
+        cwd: sessionPath,
+        stderr: 'pipe',
+        stdout: 'pipe',
+    });
+    const output = await proc.stdout.text();
 
-        await proc.exited;
+    await proc.exited;
 
-        return output.toLowerCase().includes('pdf version');
-    } catch (err) {
-        throw err;
-    }
+    return output.toLowerCase().includes('pdf version');
 }
 
 async function compressDefault(sessionPath: string) {
-    try {
-        const proc = Bun.spawn(
-            [
-                'gs',
-                '-sDEVICE=pdfwrite',
-                '-dCompatibilityLevel=1.4',
-                '-dPDFSETTINGS=/ebook',
-                '-dNOPAUSE',
-                '-dQUIET',
-                '-dBATCH',
-                '-dNOGC',
-                '-dNumRenderingThreads=4',
-                '-sOutputFile=output.pdf',
-                '-f',
-                'input.pdf',
-            ],
-            {
-                cwd: sessionPath,
-            }
-        );
+    const proc = Bun.spawn(
+        [
+            'gs',
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            '-dPDFSETTINGS=/ebook',
+            '-dNOPAUSE',
+            '-dQUIET',
+            '-dBATCH',
+            '-dNOGC',
+            '-dNumRenderingThreads=4',
+            '-sOutputFile=output.pdf',
+            '-f',
+            'input.pdf',
+        ],
+        {
+            cwd: sessionPath,
+        }
+    );
 
-        await proc.exited;
+    await proc.exited;
 
-        const outputFile = Bun.file(`${sessionPath}/output.pdf`);
-        const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
-        return outputBuffer;
-    } catch (err) {
-        throw err;
-    }
+    const outputFile = Bun.file(`${sessionPath}/output.pdf`);
+    const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
+    return outputBuffer;
 }
 
 async function compressAggressive(sessionPath: string) {
-    try {
-        const proc = Bun.spawn(
-            [
-                'gs',
-                '-sDEVICE=pdfwrite',
-                '-dCompatibilityLevel=1.4',
-                '-dColorImageDownsampleType=/Bicubic',
-                '-dColorConversionStrategy=/Gray',
-                '-dProcessColorModel=/DeviceGray',
-                '-dColorImageResolution=72',
-                '-dGrayImageResolution=72',
-                '-dMonoImageResolution=72',
-                '-dDownsampleColorImages=true',
-                '-dDownsampleGrayImages=true',
-                '-dDownsampleMonoImages=true',
-                '-dCompressFonts=true',
-                '-dSubsetFonts=true',
-                '-dNOGC',
-                '-dNumRenderingThreads=4',
-                '-dNOPAUSE',
-                '-dQUIET',
-                '-dBATCH',
-                '-sOutputFile=output.pdf',
-                '-f',
-                'input.pdf',
-            ],
-            {
-                cwd: sessionPath,
-            }
-        );
+    const proc = Bun.spawn(
+        [
+            'gs',
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            '-dColorImageDownsampleType=/Bicubic',
+            '-dColorConversionStrategy=/Gray',
+            '-dProcessColorModel=/DeviceGray',
+            '-dColorImageResolution=72',
+            '-dGrayImageResolution=72',
+            '-dMonoImageResolution=72',
+            '-dDownsampleColorImages=true',
+            '-dDownsampleGrayImages=true',
+            '-dDownsampleMonoImages=true',
+            '-dCompressFonts=true',
+            '-dSubsetFonts=true',
+            '-dNOGC',
+            '-dNumRenderingThreads=4',
+            '-dNOPAUSE',
+            '-dQUIET',
+            '-dBATCH',
+            '-sOutputFile=output.pdf',
+            '-f',
+            'input.pdf',
+        ],
+        {
+            cwd: sessionPath,
+        }
+    );
 
-        await proc.exited;
+    await proc.exited;
 
-        const outputFile = Bun.file(`${sessionPath}/output.pdf`);
-        const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
-        return outputBuffer;
-    } catch (err) {
-        throw err;
-    }
+    const outputFile = Bun.file(`${sessionPath}/output.pdf`);
+    const outputBuffer: Buffer = Buffer.from(await outputFile.arrayBuffer());
+    return outputBuffer;
 }
 
 export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
@@ -106,8 +94,6 @@ export async function PDFCompressService(aggressive: Boolean, file: Buffer) {
         }
 
         return await compressDefault(sessionPath);
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

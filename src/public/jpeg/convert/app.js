@@ -11,41 +11,33 @@ const formatSelect = document.getElementById('output-format');
 let file;
 
 async function fetchConverted(formData, format) {
-    try {
-        const response = await fetch(`/api/jpeg/convert/${format}`, {
-            method: 'POST',
-            body: formData,
-        });
-        if (response.status === 500) {
-            const error = await response.json();
-            return error;
-        } else if (response.status === 400) {
-            console.error(await response.json());
-            return {
-                error: 'Something went wrong...',
-            };
-        }
-
-        const blob = await response.blob();
-
-        const downloadUrl = URL.createObjectURL(blob);
-        const fileName = response.headers.get('X-File-Name');
-        const outputFormat = response.headers.get('Content-Type').split('/')[1];
-        const mimeType = response.headers.get('Content-Type');
-        const originalFileSize = response.headers.get('X-File-Size');
-        const newFileSize = response.headers.get('Content-Length');
-        const fileObj = turnToFile(blob, fileName, mimeType, `.${outputFormat}`);
-
+    const response = await fetch(`/api/jpeg/convert/${format}`, {
+        method: 'POST',
+        body: formData,
+    });
+    if (response.status === 500) {
+        const error = await response.json();
+        return error;
+    } else if (response.status === 400) {
+        console.error(await response.json());
         return {
-            fileObj,
-            downloadUrl,
-            fileName: fileObj.name,
-            originalFileSize,
-            newFileSize,
+            error: 'Something went wrong...',
         };
-    } catch (err) {
-        throw err;
     }
+
+    const blob = await response.blob();
+
+    const downloadUrl = URL.createObjectURL(blob);
+    const fileName = response.headers.get('X-File-Name');
+    const outputFormat = response.headers.get('Content-Type').split('/')[1];
+    const mimeType = response.headers.get('Content-Type');
+    const fileObj = turnToFile(blob, fileName, mimeType, `.${outputFormat}`);
+
+    return {
+        fileObj,
+        downloadUrl,
+        fileName: fileObj.name,
+    };
 }
 
 function renderConverted(fileInfo) {
@@ -81,11 +73,11 @@ uploadTag.addEventListener('change', () => {
 });
 
 uploadFileBtn.addEventListener('click', async () => {
-    let selectedFormat = formatSelect.value;
+    const selectedFormat = formatSelect.value;
 
     if (selectedFormat !== 'png' && selectedFormat !== 'webp' && selectedFormat !== 'pdf') {
         errorWrapper.style.display = 'block';
-        document.getElementById('error').textContent = `You must select an output format. `;
+        document.getElementById('error').textContent = 'You must select an output format. ';
 
         return;
     }

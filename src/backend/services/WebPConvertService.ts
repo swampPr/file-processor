@@ -3,21 +3,13 @@ import type { SessionID } from '../utils/utils.ts';
 import { cleanSession, createSession, checkFormat } from '../utils/utils.ts';
 
 async function WEBPToPNG(file: Buffer) {
-    try {
-        const png: Buffer = await sharp(file).png().toBuffer();
-        return png;
-    } catch (err) {
-        throw err;
-    }
+    const png: Buffer = await sharp(file).png().toBuffer();
+    return png;
 }
 
 async function WEBPToJPG(file: Buffer) {
-    try {
-        const jpg: Buffer = await sharp(file).jpeg().toBuffer();
-        return jpg;
-    } catch (err) {
-        throw err;
-    }
+    const jpg: Buffer = await sharp(file).jpeg().toBuffer();
+    return jpg;
 }
 
 export async function WEBPConvertInterface(file: Buffer, format: 'png' | 'jpeg') {
@@ -38,8 +30,6 @@ export async function WEBPConvertInterface(file: Buffer, format: 'png' | 'jpeg')
         const png: Buffer = await WEBPToPNG(file);
 
         return png;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

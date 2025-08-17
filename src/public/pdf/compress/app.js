@@ -13,44 +13,40 @@ const errorWrapper = document.getElementById('error-wrapper');
 let file;
 
 async function fetchCompressed(formData, aggressive = false) {
-    try {
-        const response = await fetch('/api/pdf/compress', {
-            method: 'POST',
-            headers: {
-                'X-Aggro': `${aggressive}`,
-            },
-            body: formData,
-        });
+    const response = await fetch('/api/pdf/compress', {
+        method: 'POST',
+        headers: {
+            'X-Aggro': `${aggressive}`,
+        },
+        body: formData,
+    });
 
-        if (response.status === 500) {
-            const error = await response.json();
-            return error;
-        } else if (response.status === 400) {
-            console.error(await response.json());
-            return {
-                error: 'Something went wrong...',
-            };
-        }
-
-        const blob = await response.blob();
-
-        const downloadUrl = URL.createObjectURL(blob);
-        const fileName = response.headers.get('X-File-Name');
-        const mimeType = response.headers.get('Content-Type');
-        const originalFileSize = response.headers.get('X-File-Size');
-        const newFileSize = response.headers.get('Content-Length');
-        const fileObj = turnToFile(blob, fileName, mimeType);
-
+    if (response.status === 500) {
+        const error = await response.json();
+        return error;
+    } else if (response.status === 400) {
+        console.error(await response.json());
         return {
-            fileObj,
-            downloadUrl,
-            fileName,
-            originalFileSize,
-            newFileSize,
+            error: 'Something went wrong...',
         };
-    } catch (err) {
-        throw err;
     }
+
+    const blob = await response.blob();
+
+    const downloadUrl = URL.createObjectURL(blob);
+    const fileName = response.headers.get('X-File-Name');
+    const mimeType = response.headers.get('Content-Type');
+    const originalFileSize = response.headers.get('X-File-Size');
+    const newFileSize = response.headers.get('Content-Length');
+    const fileObj = turnToFile(blob, fileName, mimeType);
+
+    return {
+        fileObj,
+        downloadUrl,
+        fileName,
+        originalFileSize,
+        newFileSize,
+    };
 }
 
 function renderCompressed(fileInfo) {

@@ -42,21 +42,13 @@ async function JPGToPDF(img: Buffer) {
 }
 
 async function JPGToPNG(file: Buffer) {
-    try {
-        const png: Buffer = await sharp(file).png().toBuffer();
-        return png;
-    } catch (err) {
-        throw err;
-    }
+    const png: Buffer = await sharp(file).png().toBuffer();
+    return png;
 }
 
 async function JPGToWebP(file: Buffer) {
-    try {
-        const webp: Buffer = await sharp(file).webp().toBuffer();
-        return webp;
-    } catch (err) {
-        throw err;
-    }
+    const webp: Buffer = await sharp(file).webp().toBuffer();
+    return webp;
 }
 
 export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png' | 'pdf') {
@@ -69,28 +61,18 @@ export async function JPGConvertInterface(file: Buffer, format: 'webp' | 'png' |
         if (!isJPG) throw new Error('File is NOT a JPEG image');
 
         if (format === 'webp') {
-            try {
-                const webp: Buffer = await JPGToWebP(file);
+            const webp: Buffer = await JPGToWebP(file);
 
-                return webp;
-            } catch (err) {
-                throw err;
-            }
+            return webp;
         } else if (format === 'pdf') {
-            try {
-                const pdf: Buffer = await JPGToPDF(file);
+            const pdf: Buffer = await JPGToPDF(file);
 
-                return pdf;
-            } catch (err) {
-                throw err;
-            }
+            return pdf;
         }
 
         const png: Buffer = await JPGToPNG(file);
 
         return png;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

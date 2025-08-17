@@ -13,113 +13,91 @@ type PDFInfo = {
 };
 
 async function checkFormat(sessionPath: string) {
-    try {
-        const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
-            cwd: sessionPath,
-            stderr: 'pipe',
-            stdout: 'pipe',
-        });
-        const output = await proc.stdout.text();
+    const proc = Bun.spawn(['pdfinfo', 'input.pdf'], {
+        cwd: sessionPath,
+        stderr: 'pipe',
+        stdout: 'pipe',
+    });
+    const output = await proc.stdout.text();
 
-        await proc.exited;
+    await proc.exited;
 
-        return output.toLowerCase().includes('pdf version');
-    } catch (err) {
-        throw err;
-    }
+    return output.toLowerCase().includes('pdf version');
 }
 
 async function getPDFInfo(filePath: string) {
-    try {
-        const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
-            cwd: filePath,
-            stdout: 'pipe',
-            stderr: 'pipe',
-        });
+    const pdfInfoProc = Bun.spawn(['pdfinfo', 'input.pdf'], {
+        cwd: filePath,
+        stdout: 'pipe',
+        stderr: 'pipe',
+    });
 
-        const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
+    const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
 
-        const pagesLine = pdfInfoStdout.split('\n').find((line) => line.startsWith('Pages:'));
+    const pagesLine = pdfInfoStdout.split('\n').find((line) => line.startsWith('Pages:'));
 
-        //INFO: Get the numbers from the "Pages:" section.
-        const match = pagesLine?.match(/\d+/);
+    //INFO: Get the numbers from the "Pages:" section.
+    const match = pagesLine?.match(/\d+/);
 
-        const numOfPages: number | 'Failed to parse page count' = match
-            ? Number(match[0])
-            : 'Failed to parse page count';
+    const numOfPages: number | 'Failed to parse page count' = match
+        ? Number(match[0])
+        : 'Failed to parse page count';
 
-        await pdfInfoProc.exited;
+    await pdfInfoProc.exited;
 
-        await mkdir(`${filePath}/images`);
+    await mkdir(`${filePath}/images`);
 
-        return {
-            IMGFolder: `${filePath}/images`,
-            numOfPages,
-        };
-    } catch (err) {
-        throw err;
-    }
+    return {
+        IMGFolder: `${filePath}/images`,
+        numOfPages,
+    };
 }
 
 async function convertToJPGService(fileName: string, filePath: string) {
-    try {
-        const fileInfo: PDFInfo = await getPDFInfo(filePath);
+    const fileInfo: PDFInfo = await getPDFInfo(filePath);
 
-        await Bun.spawn(['convert', `input.pdf`, `./images/${fileName}.jpeg`], {
-            cwd: filePath,
-        }).exited;
+    await Bun.spawn(['convert', `input.pdf`, `./images/${fileName}.jpeg`], {
+        cwd: filePath,
+    }).exited;
 
-        log.Log('PDF Now converted to JPEG');
+    log.Log('PDF Now converted to JPEG');
 
-        if (
-            fileInfo.numOfPages === 'Failed to parse page count' ||
-            Number(fileInfo.numOfPages) > 1
-        ) {
-            await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
-            const zipToBuffer: Buffer = await zip.toBufferPromise();
+    if (fileInfo.numOfPages === 'Failed to parse page count' || Number(fileInfo.numOfPages) > 1) {
+        await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
+        const zipToBuffer: Buffer = await zip.toBufferPromise();
 
-            return {
-                zipBuffer: zipToBuffer,
-                isZip: true,
-            };
-        }
-
-        const converted = Bun.file(`${filePath}/images/${fileName}.jpeg`);
-        const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
-        return convertedBuf;
-    } catch (err) {
-        throw err;
+        return {
+            zipBuffer: zipToBuffer,
+            isZip: true,
+        };
     }
+
+    const converted = Bun.file(`${filePath}/images/${fileName}.jpeg`);
+    const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
+    return convertedBuf;
 }
 
 async function convertToPNGService(fileName: string, filePath: string) {
-    try {
-        const fileInfo: PDFInfo = await getPDFInfo(filePath);
+    const fileInfo: PDFInfo = await getPDFInfo(filePath);
 
-        await Bun.spawn(['convert', 'input.pdf', `./images/${fileName}.png`], {
-            cwd: filePath,
-        }).exited;
+    await Bun.spawn(['convert', 'input.pdf', `./images/${fileName}.png`], {
+        cwd: filePath,
+    }).exited;
 
-        if (
-            fileInfo.numOfPages === 'Failed to parse page count' ||
-            Number(fileInfo.numOfPages) > 1
-        ) {
-            await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
-            const zipToBuffer: Buffer = await zip.toBufferPromise();
+    if (fileInfo.numOfPages === 'Failed to parse page count' || Number(fileInfo.numOfPages) > 1) {
+        await zip.addLocalFolderPromise(`${fileInfo.IMGFolder}`, {});
+        const zipToBuffer: Buffer = await zip.toBufferPromise();
 
-            return {
-                zipBuffer: zipToBuffer,
-                isZip: true,
-            };
-        }
-
-        const converted = Bun.file(`${filePath}/images/${fileName}.png`);
-        const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
-
-        return convertedBuf;
-    } catch (err) {
-        throw err;
+        return {
+            zipBuffer: zipToBuffer,
+            isZip: true,
+        };
     }
+
+    const converted = Bun.file(`${filePath}/images/${fileName}.png`);
+    const convertedBuf: Buffer = Buffer.from(await converted.arrayBuffer());
+
+    return convertedBuf;
 }
 
 export async function PDFConvertInterface(file: Buffer, fileName: string, format: 'png' | 'jpeg') {
@@ -137,8 +115,6 @@ export async function PDFConvertInterface(file: Buffer, fileName: string, format
         }
 
         return await convertToJPGService(baseName, sessionPath);
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

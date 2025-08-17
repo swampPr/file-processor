@@ -42,21 +42,13 @@ async function PNGToPDF(img: Buffer) {
 }
 
 async function PNGToJPG(file: Buffer) {
-    try {
-        const jpg: Buffer = await sharp(file).jpeg().toBuffer();
-        return jpg;
-    } catch (err) {
-        throw err;
-    }
+    const jpg: Buffer = await sharp(file).jpeg().toBuffer();
+    return jpg;
 }
 
 async function PNGToWebP(file: Buffer) {
-    try {
-        const webp: Buffer = await sharp(file).webp().toBuffer();
-        return webp;
-    } catch (err) {
-        throw err;
-    }
+    const webp: Buffer = await sharp(file).webp().toBuffer();
+    return webp;
 }
 
 export async function PNGConvertInterface(file: Buffer, format: 'webp' | 'jpeg' | 'pdf') {
@@ -69,28 +61,18 @@ export async function PNGConvertInterface(file: Buffer, format: 'webp' | 'jpeg' 
         if (!isPNG) throw new Error('File is NOT a PNG file');
 
         if (format === 'webp') {
-            try {
-                const webp: Buffer = await PNGToWebP(file);
+            const webp: Buffer = await PNGToWebP(file);
 
-                return webp;
-            } catch (err) {
-                throw err;
-            }
+            return webp;
         } else if (format === 'pdf') {
-            try {
-                const pdf: Buffer = await PNGToPDF(file);
+            const pdf: Buffer = await PNGToPDF(file);
 
-                return pdf;
-            } catch (err) {
-                throw err;
-            }
+            return pdf;
         }
 
         const jpg: Buffer = await PNGToJPG(file);
 
         return jpg;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

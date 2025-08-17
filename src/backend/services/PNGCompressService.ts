@@ -9,6 +9,9 @@ export async function PNGCompressService(file: Buffer) {
         await Bun.write(`${sessionPath}/input.png`, file);
 
         const isPNG: Boolean = await checkFormat(sessionPath, 'input.png', 'png');
+        if (!isPNG) {
+            throw new Error('File is NOT a PNG file');
+        }
 
         const compressedPNG: Buffer = await sharp(file)
             .png({
@@ -17,8 +20,6 @@ export async function PNGCompressService(file: Buffer) {
             .toBuffer();
 
         return compressedPNG;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

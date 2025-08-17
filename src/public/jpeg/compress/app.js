@@ -10,42 +10,38 @@ const downloadFileWrapper = document.getElementById('download-file');
 let file;
 
 async function fetchCompressed(formData) {
-    try {
-        const response = await fetch(`/api/jpeg/compress`, {
-            method: 'POST',
-            body: formData,
-        });
+    const response = await fetch('/api/jpeg/compress', {
+        method: 'POST',
+        body: formData,
+    });
 
-        if (response.status === 500) {
-            const error = await response.json();
-            return error.error;
-        } else if (response.status === 400) {
-            console.error(await response.json());
-
-            return {
-                error: 'Something went wrong...',
-            };
-        }
-
-        const blob = await response.blob();
-
-        const downloadUrl = URL.createObjectURL(blob);
-        const fileName = response.headers.get('X-File-Name');
-        const mimeType = response.headers.get('Content-Type');
-        const originalFileSize = response.headers.get('X-File-Size');
-        const newFileSize = response.headers.get('Content-Length');
-        const fileObj = turnToFile(blob, fileName, mimeType);
+    if (response.status === 500) {
+        const error = await response.json();
+        return error.error;
+    } else if (response.status === 400) {
+        console.error(await response.json());
 
         return {
-            downloadUrl,
-            fileObj,
-            originalFileSize,
-            fileName,
-            newFileSize,
+            error: 'Something went wrong...',
         };
-    } catch (err) {
-        throw err;
     }
+
+    const blob = await response.blob();
+
+    const downloadUrl = URL.createObjectURL(blob);
+    const fileName = response.headers.get('X-File-Name');
+    const mimeType = response.headers.get('Content-Type');
+    const originalFileSize = response.headers.get('X-File-Size');
+    const newFileSize = response.headers.get('Content-Length');
+    const fileObj = turnToFile(blob, fileName, mimeType);
+
+    return {
+        downloadUrl,
+        fileObj,
+        originalFileSize,
+        fileName,
+        newFileSize,
+    };
 }
 
 function renderCompressed(fileInfo) {
@@ -105,7 +101,6 @@ uploadBtn.addEventListener('click', async () => {
         const formData = new FormData();
         formData.append('file', gzippedFile);
 
-        //TODO: FIX ERROR HANDLING
         const fileInfo = await fetchCompressed(formData);
         const { error } = fileInfo;
         if (error) {

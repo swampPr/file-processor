@@ -19,8 +19,6 @@ export async function WEBPCompressService(file: Buffer) {
             .toBuffer();
 
         return compressedWEBP;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

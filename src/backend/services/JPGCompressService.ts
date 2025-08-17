@@ -18,8 +18,6 @@ export async function JPGCompressService(file: Buffer) {
             .toBuffer();
 
         return compressedJPG;
-    } catch (err) {
-        throw err;
     } finally {
         cleanSession(id);
     }

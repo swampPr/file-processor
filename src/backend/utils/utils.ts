@@ -5,46 +5,38 @@ import chalk from 'chalk';
 export type SessionID = string;
 
 export async function checkFormat(sessionPath: string, fileName: string, formatToCheck: string) {
-    try {
-        const proc = Bun.spawn(
-            [
-                'ffprobe',
-                '-v',
-                'error',
-                '-select_streams',
-                'v:0',
-                '-show_entries',
-                'format=format_name:stream=codec_name',
-                '-of',
-                'csv=p=0:s=,',
-                fileName,
-            ],
-            {
-                cwd: sessionPath,
-                stdout: 'pipe',
-                stderr: 'inherit',
-            }
-        );
+    const proc = Bun.spawn(
+        [
+            'ffprobe',
+            '-v',
+            'error',
+            '-select_streams',
+            'v:0',
+            '-show_entries',
+            'format=format_name:stream=codec_name',
+            '-of',
+            'csv=p=0:s=,',
+            fileName,
+        ],
+        {
+            cwd: sessionPath,
+            stdout: 'pipe',
+            stderr: 'inherit',
+        }
+    );
 
-        const procStdout: string = await proc.stdout.text();
-        await proc.exited;
+    const procStdout: string = await proc.stdout.text();
+    await proc.exited;
 
-        return procStdout.includes(formatToCheck);
-    } catch (err) {
-        throw err;
-    }
+    return procStdout.includes(formatToCheck);
 }
 
 export async function createSession(): Promise<SessionID> {
-    try {
-        const id: SessionID = crypto.randomUUID();
+    const id: SessionID = crypto.randomUUID();
 
-        await mkdir(`./src/backend/sessions/${id}`);
+    await mkdir(`./src/backend/sessions/${id}`);
 
-        return id;
-    } catch (err) {
-        throw err;
-    }
+    return id;
 }
 
 export async function cleanSession(id: SessionID) {
@@ -56,12 +48,8 @@ export async function cleanSession(id: SessionID) {
 }
 
 export async function PDFGzip(file: Buffer) {
-    try {
-        const zipped: Buffer = await gzip(file);
-        return zipped;
-    } catch (err) {
-        throw err;
-    }
+    const zipped: Buffer = await gzip(file);
+    return zipped;
 }
 
 export class Logger {
