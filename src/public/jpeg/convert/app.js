@@ -49,7 +49,7 @@ function renderConverted(fileInfo) {
     document.getElementById('download-file-link').download = fileInfo.fileName;
 
     document.getElementById('returned-file-info').textContent =
-        'You file has been sucessfully converted';
+        'Your file has been sucessfully converted';
 
     document.getElementById('download-file-link').addEventListener('click', () => {
         setTimeout(() => {
