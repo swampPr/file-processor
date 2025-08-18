@@ -35,13 +35,10 @@ async function fetchCompressed(formData, aggressive = false) {
 
     const downloadUrl = URL.createObjectURL(blob);
     const fileName = response.headers.get('X-File-Name');
-    const mimeType = response.headers.get('Content-Type');
     const originalFileSize = response.headers.get('X-File-Size');
     const newFileSize = response.headers.get('Content-Length');
-    const fileObj = turnToFile(blob, fileName, mimeType);
 
     return {
-        fileObj,
         downloadUrl,
         fileName,
         originalFileSize,
@@ -123,6 +120,7 @@ uploadFileBtn.addEventListener('click', async () => {
     } catch (err) {
         console.error(err);
 
+        spinner.style.display = 'none';
         errorWrapper.style.display = 'block';
         document.getElementById('error').textContent = 'Something went wrong...';
     }
