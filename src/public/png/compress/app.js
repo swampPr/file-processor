@@ -29,14 +29,11 @@ async function fetchCompressed(formData) {
 
     const downloadUrl = URL.createObjectURL(blob);
     const fileName = response.headers.get('X-File-Name');
-    const mimeType = response.headers.get('Content-Type');
     const originalFileSize = response.headers.get('X-File-Size');
     const newFileSize = response.headers.get('Content-Length');
-    const fileObj = turnToFile(blob, fileName, mimeType);
 
     return {
         downloadUrl,
-        fileObj,
         originalFileSize,
         fileName,
         newFileSize,
@@ -56,7 +53,7 @@ function renderCompressed(fileInfo) {
     ).toFixed(0);
 
     document.getElementById('returned-file-info').innerHTML =
-        `The file is not <b>${sizeDifference}%</b> smaller!`;
+        `The file is now <b>${sizeDifference}%</b> smaller!`;
 
     document.getElementById('download-file-link').addEventListener('click', () => {
         setTimeout(() => {
