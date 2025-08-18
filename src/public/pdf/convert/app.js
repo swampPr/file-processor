@@ -17,7 +17,7 @@ async function fetchConverted(formData, format) {
         body: formData,
     });
     if (response.status === 500) {
-        const error = response.json();
+        const error = await response.json();
         return error;
     } else if (response.status === 400) {
         console.error(await response.json());
@@ -35,7 +35,6 @@ async function fetchConverted(formData, format) {
     const fileObj = turnToFile(blob, fileName, mimeType, `.${outputFormat}`);
 
     return {
-        fileObj,
         downloadUrl,
         fileName: fileObj.name,
     };
@@ -106,7 +105,10 @@ uploadBtn.addEventListener('click', async () => {
         const convertedInfo = await fetchConverted(formData, selectedFormat);
         if (convertedInfo.error) {
             errorWrapper.style.display = 'block';
+            spinner.style.display = 'none';
             document.getElementById('error').textContent = 'Something went wrong...';
+
+            return;
         }
 
         renderConverted(convertedInfo);

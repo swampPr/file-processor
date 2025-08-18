@@ -3,14 +3,11 @@ import { cleanSession, createSession } from '../utils/utils.ts';
 import { checkFormat } from '../utils/utils.ts';
 
 async function MP4ToMP3(sessionPath: string) {
-    await Bun.spawn(
-        ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-i', 'input.mp4', 'output.mp3'],
-        { cwd: sessionPath }
-    ).exited;
-
+    await Bun.spawn(['ffmpeg', '-i', 'input.mp4', '-vn', '-c:a', 'libmp3lame', 'output.mp3'], {
+        cwd: sessionPath,
+    }).exited;
     const outputFile = Bun.file(`${sessionPath}/output.mp3`);
     const mp3Buf: Buffer = Buffer.from(await outputFile.arrayBuffer());
-
     return mp3Buf;
 }
 
@@ -39,10 +36,8 @@ async function MP4ToWebM(sessionPath: string) {
             cwd: sessionPath,
         }
     ).exited;
-
     const outputFile = Bun.file(`${sessionPath}/output.webm`);
     const webmBuf: Buffer = Buffer.from(await outputFile.arrayBuffer());
-
     return webmBuf;
 }
 
@@ -63,7 +58,6 @@ async function MP4ToFLAC(sessionPath: string) {
         ],
         { cwd: sessionPath }
     ).exited;
-
     const outputFile = Bun.file(`${sessionPath}/output.flac`);
     const flacBuf: Buffer = Buffer.from(await outputFile.arrayBuffer());
     return flacBuf;
@@ -74,6 +68,11 @@ export async function MP4ConvertService(file: Buffer, format: 'mp3' | 'webm' | '
     try {
         const sessionPath: string = `./src/backend/sessions/${id}`;
         await Bun.write(`${sessionPath}/input.mp4`, file);
+
+        const inputFile = Bun.file(`${sessionPath}/input.mp4`);
+        if (!(await inputFile.exists())) {
+            throw new Error('Input file was not created successfully');
+        }
 
         const isMP4: Boolean = await checkFormat(sessionPath, 'input.mp4', 'mp4');
         if (!isMP4) throw new Error('File is NOT an MP4 file');
