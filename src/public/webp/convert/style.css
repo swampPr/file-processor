@@ -1,0 +1,563 @@
+/* Container for the whole upload section */
+#upload-section {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f0f0f2; /* soft gray for entire section */
+    border: 2px solid #26292e; /* subtle border around the whole section */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Information section text */
+#information-paragraph {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--color-body-text);
+}
+
+/* Add spacing between sections inside the card */
+#information-section {
+    margin-bottom: 2rem;
+}
+
+/* File upload section */
+#file-upload-section {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 2px solid #d0d0d3; /* subtle line separating info from upload */
+    margin-top: 1.5rem;
+    background-color: transparent; /* let the parent gray show through */
+    border: 2px solid #26292e; /* darker than section bg */
+    border-radius: 8px; /* rounded corners to match card */
+}
+
+/* File upload section text */
+#upload-info-paragraph {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+/* Hide the ugly default input */
+#upload-webp {
+    display: none;
+}
+
+/* Styled upload button */
+#upload-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+/* Format picker (radio buttons) */
+#convert-choices {
+    margin-bottom: 1rem;
+}
+
+#convert-options {
+    border: 2px solid var(--color-separator);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    display: inline-flex;
+    gap: 1.5rem;
+    background-color: white;
+}
+
+#convert-options legend {
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+#convert-options label {
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#convert-options input[type='radio'] {
+    margin-right: 0.4rem;
+    accent-color: #0077cc;
+}
+
+/* File selected display */
+#file-selected-wrapper {
+    margin-top: 0.5rem; /* spacing below button */
+    text-align: center; /* center the span inside the wrapper */
+    display: none;
+    width: 100%; /* full width of parent container */
+}
+
+#file-selected {
+    display: inline-block;
+    padding: 0.3rem 0.7rem; /* snug padding */
+    background-color: #e0e0e5;
+    color: var(--color-body-text);
+    font-weight: 500;
+    max-width: 90%;
+    border: 1px solid #d0d0d3;
+    border-radius: 6px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0; /* remove conflicting margins */
+}
+
+/* Spinner container (hidden by default) */
+#upload-spinner {
+    margin-top: 1rem;
+    text-align: center;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* space between spinner and text */
+}
+
+/* The spinning circle */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e0e0e5; /* light gray background */
+    border-top: 3px solid #000000; /* black top segment */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Spinner text */
+.spinner-text {
+    font-weight: 500;
+    color: var(--color-body-text);
+}
+
+/* Error display */
+#error-wrapper {
+    display: none;
+    margin: 0.5rem 0; /* space between button and file-selected */
+    text-align: center; /* center the error message */
+    width: 100%; /* full width of parent container */
+    min-height: 1.5rem; /* reserve space even when hidden */
+}
+
+#error {
+    display: inline-block; /* shrink to text size */
+    padding: 0.25rem 0.5rem; /* small padding */
+    background-color: #ffe5e5; /* soft red background */
+    color: #d32f2f; /* strong red text for visibility */
+    border: 1px solid #f5c2c2; /* subtle border */
+    border-radius: 5px; /* slightly rounded corners */
+    font-size: 0.9rem; /* slightly smaller than main text */
+    font-weight: 500;
+    white-space: nowrap; /* keep text on one line */
+    overflow: hidden;
+    text-overflow: ellipsis; /* truncate long error messages */
+}
+
+/* Upload file button */
+#upload-file-btn {
+    display: none;
+    margin: 0.5rem 0; /* space above and below */
+    padding: 0.6rem 1.2rem; /* comfortable click area */
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff; /* white text on blue */
+    background-color: #1e88e5; /* pleasant medium blue */
+    border: none;
+    border-radius: 6px; /* slightly rounded */
+    cursor: pointer;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+#upload-file-btn:hover {
+    background-color: #1565c0; /* darker blue on hover */
+    transform: translateY(-1px); /* subtle lift effect */
+}
+
+#upload-file-btn:active {
+    transform: translateY(0); /* reset on click */
+}
+
+/* Download file section */
+#download-file {
+    display: none; /* hidden until JS activates it */
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e8e8eb; /* light gray background for separation */
+    border: 2px solid #26292e;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Info paragraph inside download section */
+#returned-file-info {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-body-text);
+}
+
+/* Download link styled as a button */
+#download-file-link {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #1e88e5; /* blue button */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+#download-file-link:hover {
+    background-color: #1565c0;
+    transform: translateY(-1px);
+}
+
+#download-file-link:active {
+    transform: translateY(0);
+}
+
+/* Page Header Styling */
+#page-head {
+    font-size: 2rem; /* slightly bigger than navbar header */
+    font-weight: 700; /* bold */
+    color: var(--color-primary); /* stick with the black from navbar for emphasis */
+    margin: 2rem auto 1.5rem; /* spacing around header */
+    max-width: 800px; /* limit width like the card */
+    text-align: center; /* center on the page */
+    display: flex;
+    align-items: center; /* vertically center icon + text */
+    justify-content: center;
+    gap: 0.8rem; /* space between icon and text */
+}
+
+/* Icon color for header */
+#page-head i {
+    color: #d9534f; /* red icon for 
+    font-size: 2.2rem; /* slightly larger than text */
+}
+
+/* FILE TO CHANGE: FILE NUMBER 1 - REWRITTEN TO MATCH FILE 2 */
+
+/* Container for the whole upload section */
+#upload-section {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f0f0f2; /* soft gray for entire section */
+    border: 2px solid #26292e; /* subtle border around the whole section */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Information section text */
+#information-paragraph {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--color-body-text);
+}
+
+/* Add spacing between sections inside the card */
+#information-section {
+    margin-bottom: 2rem;
+}
+
+/* File upload section */
+#file-upload-section {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 2px solid #d0d0d3; /* subtle line separating info from upload */
+    margin-top: 1.5rem;
+    background-color: transparent; /* let the parent gray show through */
+    border: 2px solid #26292e; /* darker than section bg */
+    border-radius: 8px; /* rounded corners to match card */
+}
+
+/* File upload section text */
+#upload-info-paragraph {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+/* Hide the ugly default input */
+#upload-webp {
+    display: none;
+}
+
+/* Styled upload button */
+#upload-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+/* Format picker (select dropdown) */
+#convert-choices {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#convert-choices label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+#output-format {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-body-text);
+    background-color: white;
+    border: 2px solid var(--color-separator);
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 200px;
+    text-align: center;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#output-format:focus {
+    outline: none;
+    border-color: #1e88e5;
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+}
+
+#output-format:hover {
+    border-color: #1e88e5;
+}
+
+#output-format option {
+    padding: 0.5rem;
+    font-weight: 500;
+}
+
+#output-format option:first-child {
+    color: #999;
+    font-style: italic;
+}
+
+/* Upload controls container */
+#upload-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* File selected display */
+#file-selected-wrapper {
+    margin-top: 0.5rem; /* spacing below button */
+    text-align: center; /* center the span inside the wrapper */
+    display: none;
+    width: 100%; /* full width of parent container */
+}
+
+#file-selected {
+    display: inline-block;
+    padding: 0.3rem 0.7rem; /* snug padding */
+    background-color: #e0e0e5;
+    color: var(--color-body-text);
+    font-weight: 500;
+    max-width: 90%;
+    border: 1px solid #d0d0d3;
+    border-radius: 6px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0; /* remove conflicting margins */
+}
+
+/* Spinner container (hidden by default) */
+#upload-spinner {
+    margin-top: 1rem;
+    text-align: center;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* space between spinner and text */
+}
+
+/* The spinning circle */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e0e0e5; /* light gray background */
+    border-top: 3px solid #000000; /* black top segment */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Spinner text */
+.spinner-text {
+    font-weight: 500;
+    color: var(--color-body-text);
+}
+
+/* Error display */
+#error-wrapper {
+    display: none;
+    margin: 0.5rem 0; /* space between button and file-selected */
+    text-align: center; /* center the error message */
+    width: 100%; /* full width of parent container */
+    min-height: 1.5rem; /* reserve space even when hidden */
+}
+
+#error {
+    display: inline-block; /* shrink to text size */
+    padding: 0.25rem 0.5rem; /* small padding */
+    background-color: #ffe5e5; /* soft red background */
+    color: #d32f2f; /* strong red text for visibility */
+    border: 1px solid #f5c2c2; /* subtle border */
+    border-radius: 5px; /* slightly rounded corners */
+    font-size: 0.9rem; /* slightly smaller than main text */
+    font-weight: 500;
+    white-space: nowrap; /* keep text on one line */
+    overflow: hidden;
+    text-overflow: ellipsis; /* truncate long error messages */
+}
+
+/* Upload file button */
+#upload-file-btn {
+    display: none;
+    margin: 0.5rem 0; /* space above and below */
+    padding: 0.6rem 1.2rem; /* comfortable click area */
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff; /* white text on blue */
+    background-color: #1e88e5; /* pleasant medium blue */
+    border: none;
+    border-radius: 6px; /* slightly rounded */
+    cursor: pointer;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+#upload-file-btn:hover {
+    background-color: #1565c0; /* darker blue on hover */
+    transform: translateY(-1px); /* subtle lift effect */
+}
+
+#upload-file-btn:active {
+    transform: translateY(0); /* reset on click */
+}
+
+/* Download file section */
+#download-file {
+    display: none; /* hidden until JS activates it */
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e8e8eb; /* light gray background for separation */
+    border: 2px solid #26292e;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Info paragraph inside download section */
+#returned-file-info {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-body-text);
+}
+
+/* Download link styled as a button */
+#download-file-link {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #1e88e5; /* blue button */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+#download-file-link:hover {
+    background-color: #1565c0;
+    transform: translateY(-1px);
+}
+
+#download-file-link:active {
+    transform: translateY(0);
+}
+
+/* Page Header Styling */
+#page-head {
+    font-size: 2rem; /* slightly bigger than navbar header */
+    font-weight: 700; /* bold */
+    color: var(--color-primary); /* stick with the black from navbar for emphasis */
+    margin: 2rem auto 1.5rem; /* spacing around header */
+    max-width: 800px; /* limit width like the card */
+    text-align: center; /* center on the page */
+    display: flex;
+    align-items: center; /* vertically center icon + text */
+    justify-content: center;
+    gap: 0.8rem; /* space between icon and text */
+}
+
+/* Icon color for header */
+#page-head i {
+    color: #5bc0de;
+    font-size: 2.2rem; /* slightly larger than text */
+}

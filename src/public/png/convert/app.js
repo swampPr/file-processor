@@ -29,7 +29,7 @@ async function fetchConverted(formData, format) {
     const blob = await response.blob();
 
     const downloadUrl = URL.createObjectURL(blob);
-    const [fileName] = response.headers.get('X-File-Name').split('.png');
+    const fileName = response.headers.get('X-File-Name').split('.png');
     const outputFormat = response.headers.get('Content-Type').split('/')[1];
     const mimeType = response.headers.get('Content-Type');
     const fileObj = turnToFile(blob, fileName, mimeType, `.${outputFormat}`);
@@ -65,7 +65,6 @@ uploadTag.addEventListener('change', () => {
     file = uploadTag.files[0];
 
     const truncated = fileName.length > 50 ? `${fileName.substring(0, 37)}.....` : fileName;
-    file = uploadTag.files[0];
 
     fileSelectedWrapper.style.display = 'block';
     document.getElementById('file-selected').innerHTML =
