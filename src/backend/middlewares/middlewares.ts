@@ -118,4 +118,11 @@ export default class Middlewares {
 
         await next();
     };
+
+    ZipHeaders = async (c: Context, next: Next) => {
+        c.header('X-File-Name', c.get('filename'));
+        c.header('Content-Type', 'application/zip');
+
+        await next();
+    };
 }

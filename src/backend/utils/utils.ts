@@ -4,6 +4,18 @@ import chalk from 'chalk';
 
 export type SessionID = string;
 
+export async function isPDF(filePath: string) {
+    const buf = await Bun.file(filePath).arrayBuffer();
+    const header = new Uint8Array(buf.slice(0, 5));
+    return (
+        header[0] === 37 &&
+        header[1] === 80 &&
+        header[2] === 68 &&
+        header[3] === 70 &&
+        header[4] === 45
+    ); // %PDF-
+}
+
 export async function checkFormat(sessionPath: string, fileName: string, formatToCheck: string) {
     const proc = Bun.spawn(
         [

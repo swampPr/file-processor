@@ -32,7 +32,7 @@ async function getPDFInfo(filePath: string) {
         stderr: 'pipe',
     });
 
-    const pdfInfoStdout = await new Response(pdfInfoProc.stdout).text();
+    const pdfInfoStdout = await pdfInfoProc.stdout.text();
 
     const pagesLine = pdfInfoStdout.split('\n').find((line) => line.startsWith('Pages:'));
 

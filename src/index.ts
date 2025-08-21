@@ -12,6 +12,7 @@ app.use('/icons/*', serveStatic({ root: './src/public/' }));
 app.use('/pdf/compress/*', serveStatic({ root: './src/public/' }));
 app.use('/utils/*', serveStatic({ root: './src/public/' }));
 app.use('/pdf/convert/*', serveStatic({ root: './src/public/' }));
+app.use('/pdf/split/*', serveStatic({ root: './src/public/' }));
 app.use('/png/compress/*', serveStatic({ root: './src/public/' }));
 app.use('/png/convert/*', serveStatic({ root: './src/public/' }));
 app.use('/jpeg/convert/*', serveStatic({ root: './src/public/' }));

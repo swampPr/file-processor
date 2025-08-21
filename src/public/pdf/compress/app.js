@@ -1,4 +1,4 @@
-import { gzipFile, checkSize, turnToFile } from '../../utils/utils.js';
+import { gzipFile, checkSize } from '../../utils/utils.js';
 
 const fileSelectedWrapper = document.getElementById('file-selected-wrapper');
 const uploadFileBtn = document.getElementById('upload-file-btn');
